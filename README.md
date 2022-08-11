@@ -6,6 +6,40 @@
 API that allows the management of orders from the restaurant *Pizza Mindera*.
 
 ---
+## Problem
+
+Serviço que permita a gestão de encomendas para um restaurante da Pizza Mindera
+
+- Story1: Eu como gestor da pizzaria pretendo fazer o registo de uma encomenda com os produtos pizza 4 queijos e coca cola, para isso devo aceder ao endpoint de recepção de encomendas; após isso devo aceitar o pedido para começar a prepara o pedido; fechar o pedido assim que terminar de preparar
+- Story2: Eu como gestor da pizzaria pretendo fazer o registo de uma encomenda com os produtos pão de alho, para isso devo aceder ao endpoint de recepção de encomendas; após isso vejo que não tenho stock do produto e devo cancelar a encomenda.
+- Story3: Eu como gestor da pizzaria pretendo ver a informação da encomenda com o id 44, consultando o endpoint "mostrar uma encomenda especifica" tenho acesso a toda a sua informação
+- Story4: Eu como gestor da pizzaria pretendo ver todas as encomendas na loja até ao momento feitas pelo cliente com o nome José António, consultando o endpoint "mostrar todas as encomendas e informação relacionada" consigo obter essa informação
+- Story5: Eu como gestor da pizzaria pretendo ver todas as encomendas em fase de preparação na cozinha, consultando o endpoint "mostrar todas as encomendas e informação relacionada" consigo obter essa informação
+
+Terás de necessitar de pelo menos as entidades: order, client, product, etc
+
+Criação de endpoints para gerir encomendas
+- Criação de Swagger
+- Ações possíveis via REST:
+    - Endpoint para receção de pedidos
+        - Endpoint para receber encomendas na loja
+    - Endpoint para aceitar encomenda
+        - Quando é recebido uma encomenda, deve ser feita a aceitação da mesma
+    - Endpoint para fechar encomenda
+        - Após a conclusão da encomenda e está pronta para entrega
+    - Endpoint para cancelar encomenda
+        - Quando o restaurante por não ter possibilidade de fazer a encomenda, cancela e não executa
+    - Endpoint para mostrar todas as encomendas e informação relacionada
+        - Possibilidade de filtrar por nome do cliente, numero de Telemovel do cliente, Nif do cliente, código da encomenda, 
+    - Endpoint para mostrar uma encomenda especifica e informação relacionada (via id)
+
+
+A informação das encomendas deve ser guardada e atualizada na base de dados (ex: H2)
+
+Devem ser criados testes (JUNIT) para a criação de testes unitários às funcionalidades do serviço
+
+
+---
 
 ## Technologies
 - Java 17
