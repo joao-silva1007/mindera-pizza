@@ -78,6 +78,8 @@ public class Address {
         this.city = city;
         this.nickname = nickname;
         this.client = client;
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
     }
 
     private boolean verifyZipCode(String zipCode) {
