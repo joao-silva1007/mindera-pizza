@@ -2,6 +2,7 @@ package com.mindera.pizza.domain.product;
 
 import com.mindera.pizza.domain.category.Category;
 import com.mindera.pizza.domain.ingredient.Ingredient;
+import com.mindera.pizza.domain.order.RestaurantOrder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,7 +13,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@EqualsAndHashCode
+@EqualsAndHashCode(exclude = {"ingredients", "restaurantOrders"})
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,13 +33,16 @@ public class Product {
     @Getter @Setter
     private Category category;
 
-    @ManyToMany(cascade = CascadeType.MERGE)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "product_ingredient",
             joinColumns = @JoinColumn(name = "product_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "ingredient_id", referencedColumnName = "id")
     )
     @Getter
     private Set<Ingredient> ingredients;
+
+    @ManyToMany(mappedBy = "products", fetch = FetchType.EAGER)
+    private Set<RestaurantOrder> restaurantOrders;
 
     @Getter
     private LocalDateTime createdAt;
