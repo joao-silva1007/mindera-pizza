@@ -43,7 +43,10 @@ public class RestaurantOrder {
     @Getter
     private Set<Product> products;
 
-    @ElementCollection
+    @Getter
+    private OrderStatus currentStatus;
+
+    @ElementCollection(fetch = FetchType.EAGER)
     @Getter
     private List<OrderStatusChange> orderStatusChanges;
 
@@ -78,6 +81,7 @@ public class RestaurantOrder {
         this.products = new HashSet<>();
         this.orderStatusChanges = new LinkedList<>();
         this.orderStatusChanges.add(new OrderStatusChange(OrderStatus.RECEIVED));
+        this.currentStatus = OrderStatus.RECEIVED;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
@@ -89,14 +93,19 @@ public class RestaurantOrder {
     }
 
     public void finishOrder() {
-        this.orderStatusChanges.add(new OrderStatusChange(OrderStatus.FINISHED));
+        changeStatus(OrderStatus.FINISHED);
     }
 
     public void cancelOrder() {
-        this.orderStatusChanges.add(new OrderStatusChange(OrderStatus.CANCELED));
+        changeStatus(OrderStatus.CANCELED);
     }
 
     public void acceptOrder() {
-        this.orderStatusChanges.add(new OrderStatusChange(OrderStatus.ACCEPTED));
+        changeStatus(OrderStatus.ACCEPTED);
+    }
+
+    private void changeStatus(OrderStatus newStatus) {
+        this.currentStatus = newStatus;
+        this.orderStatusChanges.add(new OrderStatusChange(newStatus));
     }
 }
