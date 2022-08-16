@@ -3,7 +3,6 @@ package com.mindera.pizza.repositories.order;
 import com.mindera.pizza.domain.order.OrderStatus;
 import com.mindera.pizza.domain.order.RestaurantOrder;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
