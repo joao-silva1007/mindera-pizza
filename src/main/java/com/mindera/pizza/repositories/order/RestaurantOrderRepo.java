@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface OrderRepo extends JpaRepository<RestaurantOrder, Long> {
+public interface RestaurantOrderRepo extends JpaRepository<RestaurantOrder, Long> {
     List<RestaurantOrder> getRestaurantOrdersByClient_VatNumber(String vatNumber);
 
     List<RestaurantOrder> getRestaurantOrdersByClient_Name(String name);
