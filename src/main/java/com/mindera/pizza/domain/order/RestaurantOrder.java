@@ -3,10 +3,7 @@ package com.mindera.pizza.domain.order;
 import com.mindera.pizza.domain.address.Address;
 import com.mindera.pizza.domain.client.Client;
 import com.mindera.pizza.domain.product.Product;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -17,7 +14,6 @@ import java.util.Set;
 
 @Entity
 @EqualsAndHashCode(exclude = "products")
-@Builder
 public class RestaurantOrder {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -60,6 +56,7 @@ public class RestaurantOrder {
 
     protected RestaurantOrder() {}
 
+    @Builder
     public RestaurantOrder(LocalDateTime orderDateTime, Address address, Client client) {
         if (orderDateTime.isAfter(LocalDateTime.now())) {
             throw new IllegalArgumentException("Invalid order date time");
