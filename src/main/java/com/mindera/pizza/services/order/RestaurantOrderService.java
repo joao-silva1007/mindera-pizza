@@ -10,6 +10,8 @@ import com.mindera.pizza.repositories.address.AddressRepo;
 import com.mindera.pizza.repositories.client.ClientRepo;
 import com.mindera.pizza.repositories.order.RestaurantOrderRepo;
 import com.mindera.pizza.repositories.product.ProductRepo;
+import com.mindera.pizza.utils.DateTimeUtils;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -18,6 +20,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@AllArgsConstructor
 public class RestaurantOrderService {
     private final RestaurantOrderRepo restaurantOrderRepo;
 
@@ -27,36 +30,26 @@ public class RestaurantOrderService {
 
     private final ProductRepo productRepo;
 
-    public RestaurantOrderService(RestaurantOrderRepo restaurantOrderRepo, AddressRepo addressRepo, ClientRepo clientRepo, ProductRepo productRepo) {
-        this.restaurantOrderRepo = restaurantOrderRepo;
-        this.addressRepo = addressRepo;
-        this.clientRepo = clientRepo;
-        this.productRepo = productRepo;
-    }
-
     public RestaurantOrder createOrder(CreateRestaurantOrderDTO restaurantOrderDTO) {
-        Optional<Address> address = addressRepo.findById(restaurantOrderDTO.addressId());
-        if (address.isEmpty()) {
-            throw new DatabaseEntryNotFoundException("Address not found in the database");
-        }
+        Address address = addressRepo.findById(restaurantOrderDTO.addressId())
+                .orElseThrow(() -> new DatabaseEntryNotFoundException("Address not found in the database"));
 
-        Optional<Client> client = clientRepo.findById(restaurantOrderDTO.clientId());
-        if (client.isEmpty()) {
-            throw new DatabaseEntryNotFoundException("Client not found in the database");
-        }
+        Client client = clientRepo.findById(restaurantOrderDTO.clientId())
+                .orElseThrow(() -> new DatabaseEntryNotFoundException("Client not found in the database"));
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        LocalDateTime orderDateTime = LocalDateTime.parse(restaurantOrderDTO.orderDateTime(), formatter);
-        RestaurantOrder restaurantOrder = new RestaurantOrder(orderDateTime, address.get(), client.get());
+        RestaurantOrder restaurantOrder = RestaurantOrder.builder()
+                .orderDateTime(DateTimeUtils.stringToLocalDateTime(restaurantOrderDTO.orderDateTime()))
+                .address(address)
+                .client(client)
+                .build();
 
         List<Product> products = productRepo.findAllById(restaurantOrderDTO.productIds());
-        if (products.size() == 0) {
+        if (products.isEmpty()) {
             throw new DatabaseEntryNotFoundException("Products not found in the database");
         }
 
-        for (Product product : products) {
-            restaurantOrder.addProduct(product);
-        }
+        products.forEach(restaurantOrder::addProduct);
+
         return restaurantOrderRepo.save(restaurantOrder);
     }
 }
