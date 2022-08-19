@@ -13,14 +13,11 @@ import java.util.Map;
 public class GlobalExceptionHandler {
     @ExceptionHandler(value = {IllegalArgumentException.class, DatabaseEntryNotFoundException.class})
     public ResponseEntity<Object> invalidInputException(Exception ex) {
-        return new ResponseEntity<>(getExceptionBody(ex, HttpStatus.BAD_REQUEST), HttpStatus.BAD_REQUEST);
-    }
-
-    private Map<String, String> getExceptionBody(Exception e, HttpStatus status) {
-        Map<String, String> map = new HashMap<>();
-        map.put("timestamp",LocalDateTime.now().toString());
-        map.put("status", status.toString());
-        map.put("errorMessage", e.getMessage());
-        return map;
+        ExceptionBody body = ExceptionBody.builder()
+                .exception(ex)
+                .statusCode(HttpStatus.BAD_REQUEST)
+                .timestamp(LocalDateTime.now())
+                .build();
+        return new ResponseEntity<>(body.toMap(), HttpStatus.BAD_REQUEST);
     }
 }
