@@ -3,7 +3,6 @@ package com.mindera.pizza.domain.order;
 import com.mindera.pizza.domain.address.Address;
 import com.mindera.pizza.domain.category.Category;
 import com.mindera.pizza.domain.client.Client;
-import com.mindera.pizza.domain.ingredient.Ingredient;
 import com.mindera.pizza.domain.product.Product;
 import org.junit.jupiter.api.Test;
 
