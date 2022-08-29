@@ -3,7 +3,10 @@ package com.mindera.pizza.domain.order;
 import com.mindera.pizza.domain.address.Address;
 import com.mindera.pizza.domain.client.Client;
 import com.mindera.pizza.domain.product.Product;
-import lombok.*;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
