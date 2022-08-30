@@ -12,6 +12,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
+//TODO: Remove after all endpoints are implemented
 @Component
 public class DatabaseBootstrapper {
     @Bean
