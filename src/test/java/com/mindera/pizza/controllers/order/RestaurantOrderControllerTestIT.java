@@ -2,8 +2,12 @@ package com.mindera.pizza.controllers.order;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mindera.pizza.PizzaApplication;
+import com.mindera.pizza.domain.order.RestaurantOrder;
 import com.mindera.pizza.dto.order.CreateRestaurantOrderDTO;
+import com.mindera.pizza.repositories.address.AddressRepo;
+import com.mindera.pizza.repositories.client.ClientRepo;
 import com.mindera.pizza.repositories.order.RestaurantOrderRepo;
+import com.mindera.pizza.repositories.product.ProductRepo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +18,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -30,6 +35,15 @@ public class RestaurantOrderControllerTestIT {
 
     @Autowired
     private RestaurantOrderRepo restaurantOrderRepo;
+
+    @Autowired
+    private ProductRepo productRepo;
+
+    @Autowired
+    private ClientRepo clientRepo;
+
+    @Autowired
+    private AddressRepo addressRepo;
 
     @BeforeEach
     public void beforeEach() {
@@ -98,5 +112,25 @@ public class RestaurantOrderControllerTestIT {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorMessage").value("Invalid order date time"))
                 .andReturn();
         assertTrue(restaurantOrderRepo.findAll().isEmpty());
+    }
+
+    @Test
+    public void findExistingOrderById() throws Exception {
+        RestaurantOrder ro = new RestaurantOrder(LocalDateTime.of(2022,4,10,10,10,10),addressRepo.findById(1L).orElseThrow(), clientRepo.findById(1L).orElseThrow());
+        ro.addProduct(productRepo.findById(1L).orElseThrow());
+        RestaurantOrder savedRo = restaurantOrderRepo.save(ro);
+        mockMvc.perform(MockMvcRequestBuilders.get("/order/" + savedRo.getId()))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.orderDateTime").value("2022-04-10T10:10:10"))
+                .andReturn();
+
+    }
+
+    @Test
+    public void findNonExisingOrderById() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/order/2"))
+                .andExpect(MockMvcResultMatchers.status().is(400))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorMessage").value("Order not found with the specified Id"))
+                .andReturn();
     }
 }

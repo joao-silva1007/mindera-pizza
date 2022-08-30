@@ -49,4 +49,8 @@ public class RestaurantOrderService {
 
         return restaurantOrderRepo.save(restaurantOrder);
     }
+
+    public RestaurantOrder findOrderById(Long orderId) {
+        return restaurantOrderRepo.findById(orderId).orElseThrow(() -> new DatabaseEntryNotFoundException("Order not found with the specified Id"));
+    }
 }
