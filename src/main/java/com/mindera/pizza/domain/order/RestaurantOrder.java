@@ -3,6 +3,7 @@ package com.mindera.pizza.domain.order;
 import com.mindera.pizza.domain.address.Address;
 import com.mindera.pizza.domain.client.Client;
 import com.mindera.pizza.domain.product.Product;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -58,13 +59,10 @@ public class RestaurantOrder {
 
     protected RestaurantOrder() {}
 
-    public RestaurantOrder(LocalDateTime orderDateTime, float totalPrice, Address address, Client client) {
+    @Builder
+    public RestaurantOrder(LocalDateTime orderDateTime, Address address, Client client) {
         if (orderDateTime.isAfter(LocalDateTime.now())) {
             throw new IllegalArgumentException("Invalid order date time");
-        }
-
-        if (totalPrice < 0) {
-            throw new IllegalArgumentException("Invalid total price");
         }
 
         if (address == null) {
@@ -75,7 +73,7 @@ public class RestaurantOrder {
             throw new IllegalArgumentException("Invalid client");
         }
         this.orderDateTime = orderDateTime;
-        this.totalPrice = totalPrice;
+        this.totalPrice = 0;
         this.address = address;
         this.client = client;
         this.products = new HashSet<>();
@@ -88,7 +86,7 @@ public class RestaurantOrder {
 
     public boolean addProduct(Product product) {
         if (product == null) return false;
-
+        this.totalPrice += product.getPrice();
         return products.add(product);
     }
 
