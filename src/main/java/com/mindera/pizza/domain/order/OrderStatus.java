@@ -16,4 +16,13 @@ public enum OrderStatus {
     public String toString() {
         return this.orderStatus;
     }
+
+    public static OrderStatus findValue(String value) {
+        if (value == null) return null;
+        try {
+            return OrderStatus.valueOf(value);
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
+    }
 }
