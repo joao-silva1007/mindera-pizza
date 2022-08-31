@@ -1,5 +1,7 @@
 package com.mindera.pizza.domain.order;
 
+import java.util.Objects;
+
 public enum OrderStatus {
     RECEIVED("Received"),
     ACCEPTED("Accepted"),
@@ -18,7 +20,10 @@ public enum OrderStatus {
     }
 
     public static OrderStatus findValue(String value) {
-        if (value == null) return null;
+        if (Objects.isNull(value)) {
+            return null;
+        }
+
         try {
             return OrderStatus.valueOf(value);
         } catch (IllegalArgumentException e) {
