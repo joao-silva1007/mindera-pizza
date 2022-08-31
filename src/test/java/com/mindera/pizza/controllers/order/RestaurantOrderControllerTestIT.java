@@ -116,7 +116,9 @@ public class RestaurantOrderControllerTestIT {
 
     @Test
     public void findExistingOrderById() throws Exception {
-        RestaurantOrder ro = new RestaurantOrder(LocalDateTime.of(2022,4,10,10,10,10),addressRepo.findById(1L).orElseThrow(), clientRepo.findById(1L).orElseThrow());
+        RestaurantOrder ro = new RestaurantOrder(LocalDateTime.of(2022,4,10,10,10,10),
+                addressRepo.findById(1L).orElseThrow(),
+                clientRepo.findById(1L).orElseThrow());
         ro.addProduct(productRepo.findById(1L).orElseThrow());
         RestaurantOrder savedRo = restaurantOrderRepo.save(ro);
         mockMvc.perform(MockMvcRequestBuilders.get("/order/" + savedRo.getId()))
