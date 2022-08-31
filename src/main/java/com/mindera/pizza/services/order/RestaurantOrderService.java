@@ -58,7 +58,9 @@ public class RestaurantOrderService {
 
         for (Map.Entry<String, String> entry : filters.entrySet()) {
             Specification<RestaurantOrder> currentSpec = RestaurantOrderSpecifications.getSpecificationFromFilterName(entry.getKey(), entry.getValue());
-            if (currentSpec != null) spec = spec.and(currentSpec);
+            if (currentSpec != null) {
+                spec = spec.and(currentSpec);
+            }
         }
 
         return restaurantOrderRepo.findAll(spec);
