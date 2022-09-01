@@ -16,13 +16,17 @@ import org.springframework.http.ResponseEntity;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 class RestaurantOrderControllerTest {
 
     RestaurantOrderService restaurantOrderServiceMock;
+    RestaurantOrderController restaurantOrderController;
 
     @BeforeEach
     void beforeEach() {
         restaurantOrderServiceMock = Mockito.mock(RestaurantOrderService.class);
+        restaurantOrderController = new RestaurantOrderController(restaurantOrderServiceMock);
     }
 
     @Test
@@ -38,5 +42,20 @@ class RestaurantOrderControllerTest {
         ro.addProduct(p);
         Mockito.when(restaurantOrderServiceMock.createOrder(dto)).thenReturn(ro);
         ResponseEntity<RestaurantOrder> expected = new ResponseEntity<>(ro, HttpStatus.CREATED);
+        assertEquals(expected, restaurantOrderController.createRestaurantOrder(dto));
+    }
+
+    @Test
+    void findRestaurantOrderById() {
+        Client c = new Client("name", "email@gmail.com");
+        Address a = new Address("street", 10, "1234-123", "city", "house", c);
+        Category cat = new Category("cat1");
+        Product p = new Product("prod", 10, 10, cat);
+
+        RestaurantOrder ro = new RestaurantOrder(LocalDateTime.of(2022,4,10,10,10,10),a, c);
+        ro.addProduct(p);
+        Mockito.when(restaurantOrderServiceMock.findOrderById(1L)).thenReturn(ro);
+        ResponseEntity<RestaurantOrder> expected = new ResponseEntity<>(ro, HttpStatus.OK);
+        assertEquals(expected, restaurantOrderController.findOrderById(1L));
     }
 }

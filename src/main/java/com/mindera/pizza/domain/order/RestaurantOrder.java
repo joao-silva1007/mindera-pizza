@@ -20,6 +20,7 @@ import java.util.Set;
 public class RestaurantOrder {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Getter
     private Long id;
 
     @Getter @Setter
