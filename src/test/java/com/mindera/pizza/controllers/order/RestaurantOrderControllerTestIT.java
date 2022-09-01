@@ -12,7 +12,6 @@ import com.mindera.pizza.repositories.client.ClientRepo;
 import com.mindera.pizza.repositories.order.RestaurantOrderRepo;
 import com.mindera.pizza.repositories.product.ProductRepo;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -193,6 +192,23 @@ public class RestaurantOrderControllerTestIT {
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].currentStatus").value("RECEIVED"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[1].currentStatus").value("RECEIVED"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[2]").doesNotExist())
+                .andReturn();
+    }
+
+    @Test
+    public void findExistingOrderById() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/order/1"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.orderDateTime").value("2022-04-10T10:10:10"))
+                .andReturn();
+
+    }
+
+    @Test
+    public void findNonExisingOrderById() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/order/500"))
+                .andExpect(MockMvcResultMatchers.status().is(400))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorMessage").value("Order not found with the specified Id"))
                 .andReturn();
     }
 }

@@ -26,4 +26,9 @@ public class RestaurantOrderController {
     public ResponseEntity<List<RestaurantOrder>> getRestaurantOrders(@RequestParam(required = false) Map<String, String> params) {
         return new ResponseEntity<>(restaurantOrderService.findOrders(params), HttpStatus.OK);
     }
+
+    @GetMapping(path = "/{id}")
+    public ResponseEntity<RestaurantOrder> findOrderById(@PathVariable Long id) {
+        return new ResponseEntity<>(restaurantOrderService.findOrderById(id), HttpStatus.OK);
+    }
 }

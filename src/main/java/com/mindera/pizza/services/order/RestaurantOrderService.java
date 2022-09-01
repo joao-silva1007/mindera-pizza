@@ -66,4 +66,8 @@ public class RestaurantOrderService {
 
         return restaurantOrderRepo.findAll(spec);
     }
+
+    public RestaurantOrder findOrderById(Long orderId) {
+        return restaurantOrderRepo.findById(orderId).orElseThrow(() -> new DatabaseEntryNotFoundException("Order not found with the specified Id"));
+    }
 }

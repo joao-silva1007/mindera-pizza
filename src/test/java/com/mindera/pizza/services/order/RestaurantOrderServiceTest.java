@@ -58,7 +58,7 @@ class RestaurantOrderServiceTest {
     }
 
     @Test
-    void nonExistentClient() {
+    void createOrderWithNonExistentClient() {
         ClientRepo newClientRepoMock = Mockito.mock(ClientRepo.class);
         RestaurantOrderRepo restaurantOrderRepoMock = Mockito.mock(RestaurantOrderRepo.class);
         Mockito.when(newClientRepoMock.findById(1L)).thenReturn(Optional.empty());
@@ -68,7 +68,7 @@ class RestaurantOrderServiceTest {
     }
 
     @Test
-    void nonExistentAddress() {
+    void createOrderWithNonExistentAddress() {
         AddressRepo newAddressRepoMock = Mockito.mock(AddressRepo.class);
 
         Mockito.when(newAddressRepoMock.findById(1L)).thenReturn(Optional.empty());
@@ -78,7 +78,7 @@ class RestaurantOrderServiceTest {
     }
 
     @Test
-    void nonExistentProducts() {
+    void createOrderWithNonExistentProducts() {
         ProductRepo newProductRepoMock = Mockito.mock(ProductRepo.class);
 
         Mockito.when(newProductRepoMock.findAllById(Arrays.asList(1L,2L))).thenReturn(new LinkedList<>());
@@ -105,5 +105,31 @@ class RestaurantOrderServiceTest {
         List<RestaurantOrder> result = service.findOrders(filters);
 
         assertEquals(expectedResult, result);
+    }
+
+    @Test
+    void findExistingOrderById() {
+        Client c = new Client("name", "email@gmail.com");
+        Address a = new Address("street", 10, "1234-123", "city", "house", c);
+        RestaurantOrder expectedRo = new RestaurantOrder(LocalDateTime.of(2021,10,10,10,10,10),a, c);
+
+        RestaurantOrderRepo newRestaurantOrderRepoMock = Mockito.mock(RestaurantOrderRepo.class);
+
+        Mockito.when(newRestaurantOrderRepoMock.findById(1L)).thenReturn(Optional.of(expectedRo));
+        RestaurantOrderService service = new RestaurantOrderService(newRestaurantOrderRepoMock, addressRepoMock, clientRepoMock, productRepoMock);
+
+        RestaurantOrder ro = service.findOrderById(1L);
+        Mockito.verify(newRestaurantOrderRepoMock, Mockito.times(1)).findById(1L);
+        assertEquals(expectedRo, ro);
+    }
+
+    @Test
+    void findNonExistingOrderById() {
+        RestaurantOrderRepo newRestaurantOrderRepoMock = Mockito.mock(RestaurantOrderRepo.class);
+
+        Mockito.when(newRestaurantOrderRepoMock.findById(Mockito.any())).thenReturn(Optional.empty());
+        RestaurantOrderService service = new RestaurantOrderService(newRestaurantOrderRepoMock, addressRepoMock, clientRepoMock, productRepoMock);
+
+        assertThrows(DatabaseEntryNotFoundException.class, () -> service.findOrderById(1L));
     }
 }
