@@ -148,7 +148,6 @@ public class RestaurantOrderControllerTestIT {
     }
 
     @Test
-    @Order(1)
     public void getAllOrdersFilteredByClientVatNumber() throws Exception {
         restaurantOrderRepo.saveAll(List.of(ro1, ro2, ro3));
 

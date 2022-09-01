@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @Service
 @AllArgsConstructor
@@ -58,7 +59,7 @@ public class RestaurantOrderService {
 
         for (Map.Entry<String, String> entry : filters.entrySet()) {
             Specification<RestaurantOrder> currentSpec = RestaurantOrderSpecifications.getSpecificationFromFilterName(entry.getKey(), entry.getValue());
-            if (currentSpec != null) {
+            if (Objects.nonNull(currentSpec)) {
                 spec = spec.and(currentSpec);
             }
         }
