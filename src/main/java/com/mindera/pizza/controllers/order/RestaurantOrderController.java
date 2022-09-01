@@ -6,10 +6,7 @@ import com.mindera.pizza.services.order.RestaurantOrderService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/order")
@@ -20,5 +17,10 @@ public class RestaurantOrderController {
     @PostMapping
     public ResponseEntity<RestaurantOrder> createRestaurantOrder(@RequestBody CreateRestaurantOrderDTO restaurantOrderDTO) {
         return new ResponseEntity<>(restaurantOrderService.createOrder(restaurantOrderDTO), HttpStatus.CREATED);
+    }
+
+    @PostMapping(path = "/{id}/status")
+    public ResponseEntity<RestaurantOrder> updateOrderStatus(@PathVariable Long id, @RequestParam String newOrderStatus) {
+        return new ResponseEntity<>(restaurantOrderService.updateOrderStatus(id, newOrderStatus), HttpStatus.OK);
     }
 }

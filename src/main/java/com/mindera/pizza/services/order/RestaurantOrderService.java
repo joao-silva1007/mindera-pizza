@@ -2,10 +2,12 @@ package com.mindera.pizza.services.order;
 
 import com.mindera.pizza.domain.address.Address;
 import com.mindera.pizza.domain.client.Client;
+import com.mindera.pizza.domain.order.OrderStatus;
 import com.mindera.pizza.domain.order.RestaurantOrder;
 import com.mindera.pizza.domain.product.Product;
 import com.mindera.pizza.dto.order.CreateRestaurantOrderDTO;
 import com.mindera.pizza.exceptions.DatabaseEntryNotFoundException;
+import com.mindera.pizza.exceptions.InvalidOrderStatus;
 import com.mindera.pizza.repositories.address.AddressRepo;
 import com.mindera.pizza.repositories.client.ClientRepo;
 import com.mindera.pizza.repositories.order.RestaurantOrderRepo;
@@ -14,7 +16,10 @@ import com.mindera.pizza.utils.DateTimeUtils;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @AllArgsConstructor
@@ -47,6 +52,22 @@ public class RestaurantOrderService {
 
         products.forEach(restaurantOrder::addProduct);
 
+        return restaurantOrderRepo.save(restaurantOrder);
+    }
+
+    public RestaurantOrder updateOrderStatus(Long id, String newStatus) {
+        OrderStatus newOrderStatus = OrderStatus.findValue(newStatus);
+        if (Objects.isNull(newOrderStatus)) {
+            throw new InvalidOrderStatus("The new order status is invalid. Must be one of " + Arrays.toString(OrderStatus.values()));
+        }
+        RestaurantOrder restaurantOrder = restaurantOrderRepo.findById(id)
+                .orElseThrow(() -> new DatabaseEntryNotFoundException("Restaurant Order not found in the database"));
+        switch (newOrderStatus) {
+            case CANCELED -> restaurantOrder.cancelOrder();
+            case ACCEPTED -> restaurantOrder.acceptOrder();
+            case FINISHED -> restaurantOrder.finishOrder();
+            case RECEIVED -> throw new IllegalArgumentException("Cannot change the order status to received");
+        }
         return restaurantOrderRepo.save(restaurantOrder);
     }
 }

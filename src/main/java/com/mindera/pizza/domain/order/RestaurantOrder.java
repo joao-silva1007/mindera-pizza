@@ -105,5 +105,6 @@ public class RestaurantOrder {
     private void changeStatus(OrderStatus newStatus) {
         this.currentStatus = newStatus;
         this.orderStatusChanges.add(new OrderStatusChange(newStatus));
+        this.setUpdatedAt(LocalDateTime.now());
     }
 }
