@@ -8,6 +8,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/order")
 @AllArgsConstructor
@@ -17,6 +20,11 @@ public class RestaurantOrderController {
     @PostMapping
     public ResponseEntity<RestaurantOrder> createRestaurantOrder(@RequestBody CreateRestaurantOrderDTO restaurantOrderDTO) {
         return new ResponseEntity<>(restaurantOrderService.createOrder(restaurantOrderDTO), HttpStatus.CREATED);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<RestaurantOrder>> getRestaurantOrders(@RequestParam(required = false) Map<String, String> params) {
+        return new ResponseEntity<>(restaurantOrderService.findOrders(params), HttpStatus.OK);
     }
 
     @GetMapping(path = "/{id}")

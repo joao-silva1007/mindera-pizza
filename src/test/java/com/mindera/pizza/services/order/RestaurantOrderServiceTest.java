@@ -14,12 +14,10 @@ import com.mindera.pizza.repositories.product.ProductRepo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -66,9 +64,7 @@ class RestaurantOrderServiceTest {
         Mockito.when(newClientRepoMock.findById(1L)).thenReturn(Optional.empty());
         RestaurantOrderService service = new RestaurantOrderService(restaurantOrderRepoMock, addressRepoMock, newClientRepoMock, productRepoMock);
 
-        assertThrows(DatabaseEntryNotFoundException.class, () -> {
-            service.createOrder(new CreateRestaurantOrderDTO("2021-10-10 10:10:10", List.of(1L), 1L, 1L));
-        });
+        assertThrows(DatabaseEntryNotFoundException.class, () -> service.createOrder(new CreateRestaurantOrderDTO("2021-10-10 10:10:10", List.of(1L), 1L, 1L)));
     }
 
     @Test
@@ -78,9 +74,7 @@ class RestaurantOrderServiceTest {
         Mockito.when(newAddressRepoMock.findById(1L)).thenReturn(Optional.empty());
         RestaurantOrderService service = new RestaurantOrderService(restaurantOrderRepoMock, newAddressRepoMock, clientRepoMock, productRepoMock);
 
-        assertThrows(DatabaseEntryNotFoundException.class, () -> {
-            service.createOrder(new CreateRestaurantOrderDTO("2021-10-10 10:10:10", List.of(1L), 1L, 1L));
-        });
+        assertThrows(DatabaseEntryNotFoundException.class, () -> service.createOrder(new CreateRestaurantOrderDTO("2021-10-10 10:10:10", List.of(1L), 1L, 1L)));
     }
 
     @Test
@@ -90,9 +84,27 @@ class RestaurantOrderServiceTest {
         Mockito.when(newProductRepoMock.findAllById(Arrays.asList(1L,2L))).thenReturn(new LinkedList<>());
         RestaurantOrderService service = new RestaurantOrderService(restaurantOrderRepoMock, addressRepoMock, clientRepoMock, newProductRepoMock);
 
-        assertThrows(DatabaseEntryNotFoundException.class, () -> {
-            service.createOrder(new CreateRestaurantOrderDTO("2021-10-10 10:10:10", Arrays.asList(1L,2L), 1L, 1L));
-        });
+        assertThrows(DatabaseEntryNotFoundException.class, () -> service.createOrder(new CreateRestaurantOrderDTO("2021-10-10 10:10:10", Arrays.asList(1L,2L), 1L, 1L)));
+    }
+
+    @Test
+    void getOrdersNoFilters() {
+        Client c = new Client("name", "email@gmail.com");
+        Address a = new Address("street", 10, "1234-123", "city", "house", c);
+        RestaurantOrder ro1 = new RestaurantOrder(LocalDateTime.of(2021,10,10,10,10,10),a, c);
+        RestaurantOrder ro2 = new RestaurantOrder(LocalDateTime.of(2021,10,15,10,10,10),a, c);
+        RestaurantOrder ro3 = new RestaurantOrder(LocalDateTime.of(2021,10,20,10,10,10),a, c);
+        List<RestaurantOrder> expectedResult = List.of(ro1, ro2, ro3);
+
+        RestaurantOrderRepo newRestaurantOrderRepoMock = Mockito.mock(RestaurantOrderRepo.class);
+
+        RestaurantOrderService service = new RestaurantOrderService(newRestaurantOrderRepoMock, addressRepoMock, clientRepoMock, productRepoMock);
+
+        Mockito.when(newRestaurantOrderRepoMock.findAll((Specification<RestaurantOrder>) Mockito.any())).thenReturn(expectedResult);
+        Map<String, String> filters = new HashMap<>();
+        List<RestaurantOrder> result = service.findOrders(filters);
+
+        assertEquals(expectedResult, result);
     }
 
     @Test
