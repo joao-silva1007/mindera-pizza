@@ -7,12 +7,15 @@ import com.mindera.pizza.domain.order.RestaurantOrderSpecifications;
 import com.mindera.pizza.domain.product.Product;
 import com.mindera.pizza.dto.order.CreateRestaurantOrderDTO;
 import com.mindera.pizza.exceptions.DatabaseEntryNotFoundException;
+import com.mindera.pizza.exceptions.GlobalExceptionHandler;
 import com.mindera.pizza.repositories.address.AddressRepo;
 import com.mindera.pizza.repositories.client.ClientRepo;
 import com.mindera.pizza.repositories.order.RestaurantOrderRepo;
 import com.mindera.pizza.repositories.product.ProductRepo;
 import com.mindera.pizza.utils.DateTimeUtils;
 import lombok.AllArgsConstructor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +26,8 @@ import java.util.Objects;
 @Service
 @AllArgsConstructor
 public class RestaurantOrderService {
+    private static final Logger logger = LogManager.getLogger(GlobalExceptionHandler.class);
+
     private final RestaurantOrderRepo restaurantOrderRepo;
 
     private final AddressRepo addressRepo;
@@ -51,7 +56,10 @@ public class RestaurantOrderService {
 
         products.forEach(restaurantOrder::addProduct);
 
-        return restaurantOrderRepo.save(restaurantOrder);
+        RestaurantOrder savedRO = restaurantOrderRepo.save(restaurantOrder);
+
+        logger.info("Added a new restaurant order with id {} to the DB", savedRO.getId());
+        return savedRO;
     }
 
     public List<RestaurantOrder> findOrders(Map<String, String> filters) {
