@@ -4,6 +4,7 @@ import com.mindera.pizza.domain.address.Address;
 import com.mindera.pizza.domain.client.Client;
 import com.mindera.pizza.domain.order.OrderStatus;
 import com.mindera.pizza.domain.order.RestaurantOrder;
+import com.mindera.pizza.domain.order.RestaurantOrderSpecifications;
 import com.mindera.pizza.domain.product.Product;
 import com.mindera.pizza.dto.order.CreateRestaurantOrderDTO;
 import com.mindera.pizza.exceptions.DatabaseEntryNotFoundException;
@@ -14,11 +15,12 @@ import com.mindera.pizza.repositories.order.RestaurantOrderRepo;
 import com.mindera.pizza.repositories.product.ProductRepo;
 import com.mindera.pizza.utils.DateTimeUtils;
 import lombok.AllArgsConstructor;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @Service
@@ -69,5 +71,22 @@ public class RestaurantOrderService {
             case RECEIVED -> throw new IllegalArgumentException("Cannot change the order status to received");
         }
         return restaurantOrderRepo.save(restaurantOrder);
+    }
+
+    public List<RestaurantOrder> findOrders(Map<String, String> filters) {
+        Specification<RestaurantOrder> spec = (root, query, criteriaBuilder) -> criteriaBuilder.conjunction();
+
+        for (Map.Entry<String, String> entry : filters.entrySet()) {
+            Specification<RestaurantOrder> currentSpec = RestaurantOrderSpecifications.getSpecificationFromFilterName(entry.getKey(), entry.getValue());
+            if (Objects.nonNull(currentSpec)) {
+                spec = spec.and(currentSpec);
+            }
+        }
+
+        return restaurantOrderRepo.findAll(spec);
+    }
+
+    public RestaurantOrder findOrderById(Long orderId) {
+        return restaurantOrderRepo.findById(orderId).orElseThrow(() -> new DatabaseEntryNotFoundException("Order not found with the specified Id"));
     }
 }

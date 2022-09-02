@@ -6,6 +6,16 @@
 API that allows the management of orders from the restaurant *Pizza Mindera*.
 
 ---
+##Running the application locally
+
+To run the project locally one simply needs to run the `main` method in the PizzaApplication class.
+Alternatively, it is also possible to run the following maven command to run the project
+
+```
+mvn spring-boot:run
+```
+
+---
 ## Problem
 
 Serviço que permita a gestão de encomendas para um restaurante da Pizza Mindera
