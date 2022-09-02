@@ -1,5 +1,6 @@
 package com.mindera.pizza.domain.category;
 
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -29,6 +30,7 @@ public class Category {
 
     protected Category() {}
 
+    @Builder
     public Category(String name) {
         if (name.isBlank()) {
             throw new IllegalArgumentException("Invalid name");
