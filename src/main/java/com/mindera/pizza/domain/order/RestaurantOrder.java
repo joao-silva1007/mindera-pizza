@@ -1,8 +1,10 @@
 package com.mindera.pizza.domain.order;
 
+import com.mindera.pizza.domain.DatabaseTimestamps;
 import com.mindera.pizza.domain.address.Address;
 import com.mindera.pizza.domain.client.Client;
 import com.mindera.pizza.domain.product.Product;
+import com.mindera.pizza.exceptions.InvalidStatusChangeException;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -16,7 +18,7 @@ import java.util.List;
 import java.util.Set;
 
 @Entity
-@EqualsAndHashCode(exclude = "products")
+@EqualsAndHashCode(exclude = {"products", "timestamps"})
 public class RestaurantOrder {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -53,10 +55,8 @@ public class RestaurantOrder {
     private List<OrderStatusChange> orderStatusChanges;
 
     @Getter
-    private LocalDateTime createdAt;
-
-    @Getter @Setter
-    private LocalDateTime updatedAt;
+    @Embedded
+    private final DatabaseTimestamps timestamps = new DatabaseTimestamps();
 
     protected RestaurantOrder() {}
 
@@ -81,8 +81,6 @@ public class RestaurantOrder {
         this.orderStatusChanges = new LinkedList<>();
         this.orderStatusChanges.add(new OrderStatusChange(OrderStatus.RECEIVED));
         this.currentStatus = OrderStatus.RECEIVED;
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
     }
 
     public boolean addProduct(Product product) {
@@ -92,20 +90,28 @@ public class RestaurantOrder {
     }
 
     public void finishOrder() {
+        if (this.currentStatus != OrderStatus.ACCEPTED) {
+            throw new InvalidStatusChangeException(String.format("Cannot change status from %s to %s", this.currentStatus, OrderStatus.FINISHED));
+        }
         changeStatus(OrderStatus.FINISHED);
     }
 
     public void cancelOrder() {
+        if (!List.of(OrderStatus.RECEIVED, OrderStatus.ACCEPTED).contains(this.currentStatus)) {
+            throw new InvalidStatusChangeException(String.format("Cannot change status from %s to %s", this.currentStatus, OrderStatus.CANCELED));
+        }
         changeStatus(OrderStatus.CANCELED);
     }
 
     public void acceptOrder() {
+        if (this.currentStatus != OrderStatus.RECEIVED) {
+            throw new InvalidStatusChangeException(String.format("Cannot change status from %s to %s", this.currentStatus, OrderStatus.ACCEPTED));
+        }
         changeStatus(OrderStatus.ACCEPTED);
     }
 
     private void changeStatus(OrderStatus newStatus) {
         this.currentStatus = newStatus;
         this.orderStatusChanges.add(new OrderStatusChange(newStatus));
-        this.setUpdatedAt(LocalDateTime.now());
     }
 }

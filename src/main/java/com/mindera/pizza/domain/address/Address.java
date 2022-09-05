@@ -1,12 +1,12 @@
 package com.mindera.pizza.domain.address;
 
+import com.mindera.pizza.domain.DatabaseTimestamps;
 import com.mindera.pizza.domain.client.Client;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 import java.util.regex.Pattern;
 
 @Entity
@@ -40,10 +40,8 @@ public class Address {
     private Client client;
 
     @Getter
-    private LocalDateTime createdAt;
-
-    @Getter @Setter
-    private LocalDateTime updatedAt;
+    @Embedded
+    private final DatabaseTimestamps timestamps = new DatabaseTimestamps();
 
     protected Address() {}
 
@@ -78,8 +76,6 @@ public class Address {
         this.city = city;
         this.nickname = nickname;
         this.client = client;
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
     }
 
     private boolean verifyZipCode(String zipCode) {

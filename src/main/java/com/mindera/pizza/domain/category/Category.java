@@ -1,14 +1,11 @@
 package com.mindera.pizza.domain.category;
 
+import com.mindera.pizza.domain.DatabaseTimestamps;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import java.time.LocalDateTime;
+import javax.persistence.*;
 
 @Entity
 @EqualsAndHashCode
@@ -22,10 +19,8 @@ public class Category {
     private String name;
 
     @Getter
-    private LocalDateTime createdAt;
-
-    @Getter @Setter
-    private LocalDateTime updatedAt;
+    @Embedded
+    private final DatabaseTimestamps timestamps = new DatabaseTimestamps();
 
     protected Category() {}
 
@@ -35,7 +30,5 @@ public class Category {
         }
 
         this.name = name;
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
     }
 }

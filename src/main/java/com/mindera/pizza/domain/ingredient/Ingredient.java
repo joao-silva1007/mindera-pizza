@@ -1,12 +1,12 @@
 package com.mindera.pizza.domain.ingredient;
 
+import com.mindera.pizza.domain.DatabaseTimestamps;
 import com.mindera.pizza.domain.product.Product;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -29,10 +29,8 @@ public class Ingredient {
     private Set<Product> products;
 
     @Getter
-    private LocalDateTime createdAt;
-
-    @Getter @Setter
-    private LocalDateTime updatedAt;
+    @Embedded
+    private final DatabaseTimestamps timestamps = new DatabaseTimestamps();
 
     protected Ingredient() {}
 
@@ -48,7 +46,5 @@ public class Ingredient {
         this.name = name;
         this.stock = stock;
         this.products = new HashSet<>();
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
     }
 }
