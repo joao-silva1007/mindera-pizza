@@ -1,6 +1,5 @@
 package com.mindera.pizza.controllers.order;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
 import com.mindera.pizza.PizzaApplication;
@@ -28,7 +27,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
 
 @SpringBootTest(
@@ -221,21 +219,14 @@ public class RestaurantOrderControllerTestIT {
         ObjectMapper mapper = new ObjectMapper();
 
         mockMvc.perform(MockMvcRequestBuilders.patch("/order/" + savedRO4.getId() + "/status")
-                    .content(mapper.writeValueAsString(new UpdateRestaurantOrderStatusDTO("CANCELED")))
-                    .accept(MediaType.APPLICATION_JSON)
-                    .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().is(200))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.currentStatus").value("CANCELED"));
-
-        mockMvc.perform(MockMvcRequestBuilders.patch("/order/" + savedRO4.getId() + "/status")
-                        .content(mapper.writeValueAsString(new UpdateRestaurantOrderStatusDTO("ACCEPTED")))
+                        .content(mapper.writeValueAsString(new UpdateRestaurantOrderStatusDTO(OrderStatus.ACCEPTED)))
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().is(200))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.currentStatus").value("ACCEPTED"));
 
         mockMvc.perform(MockMvcRequestBuilders.patch("/order/" + savedRO4.getId() + "/status")
-                        .content(mapper.writeValueAsString(new UpdateRestaurantOrderStatusDTO("FINISHED")))
+                        .content(mapper.writeValueAsString(new UpdateRestaurantOrderStatusDTO(OrderStatus.FINISHED)))
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().is(200))
@@ -244,20 +235,28 @@ public class RestaurantOrderControllerTestIT {
     }
 
     @Test
+    public void changeOrderStatusToCanceled() throws Exception {
+        val ro4 = new RestaurantOrder(LocalDateTime.of(2022,1,10,10,10,10), a1, c1);
+        val savedRO4 = restaurantOrderRepo.save(ro4);
+        ObjectMapper mapper = new ObjectMapper();
+
+        mockMvc.perform(MockMvcRequestBuilders.patch("/order/" + savedRO4.getId() + "/status")
+                        .content(mapper.writeValueAsString(new UpdateRestaurantOrderStatusDTO(OrderStatus.CANCELED)))
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().is(200))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.currentStatus").value("CANCELED"));
+        restaurantOrderRepo.deleteById(savedRO4.getId());
+    }
+
+    @Test
     void changeToInvalidOrderStatus() throws Exception {
         ObjectMapper mapper = new ObjectMapper();
         mockMvc.perform(MockMvcRequestBuilders.patch("/order/1/status")
-                        .content(mapper.writeValueAsString(new UpdateRestaurantOrderStatusDTO("RECEIVED")))
+                        .content(mapper.writeValueAsString(new UpdateRestaurantOrderStatusDTO(OrderStatus.RECEIVED)))
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().is(400))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorMessage").value("Cannot change the order status to received"));
-
-        mockMvc.perform(MockMvcRequestBuilders.patch("/order/1/status")
-                        .content(mapper.writeValueAsString(new UpdateRestaurantOrderStatusDTO("INVALID_STATUS")))
-                        .accept(MediaType.APPLICATION_JSON)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().is(400))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.errorMessage").value("The new order status is invalid. Must be one of " + Arrays.toString(OrderStatus.values())));
     }
 }
