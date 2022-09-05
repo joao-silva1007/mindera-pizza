@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
-    @ExceptionHandler(value = {IllegalArgumentException.class, DatabaseEntryNotFoundException.class})
+    @ExceptionHandler(value = {IllegalArgumentException.class, DatabaseEntryNotFoundException.class, InvalidStatusChangeException.class})
     public ResponseEntity<Object> invalidInputException(Exception ex) {
         ExceptionBody body = ExceptionBody.builder()
                 .exception(ex)
