@@ -1,4 +1,6 @@
 package com.mindera.pizza.dto.order;
 
-public record UpdateRestaurantOrderStatusDTO(String newStatus) {
+import com.mindera.pizza.domain.order.OrderStatus;
+
+public record UpdateRestaurantOrderStatusDTO(OrderStatus newStatus) {
 }

@@ -2,14 +2,12 @@ package com.mindera.pizza.services.order;
 
 import com.mindera.pizza.domain.address.Address;
 import com.mindera.pizza.domain.client.Client;
-import com.mindera.pizza.domain.order.OrderStatus;
 import com.mindera.pizza.domain.order.RestaurantOrder;
 import com.mindera.pizza.domain.order.RestaurantOrderSpecifications;
 import com.mindera.pizza.domain.product.Product;
 import com.mindera.pizza.dto.order.CreateRestaurantOrderDTO;
 import com.mindera.pizza.dto.order.UpdateRestaurantOrderStatusDTO;
 import com.mindera.pizza.exceptions.DatabaseEntryNotFoundException;
-import com.mindera.pizza.exceptions.InvalidOrderStatus;
 import com.mindera.pizza.repositories.address.AddressRepo;
 import com.mindera.pizza.repositories.client.ClientRepo;
 import com.mindera.pizza.repositories.order.RestaurantOrderRepo;
@@ -19,7 +17,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -59,13 +56,10 @@ public class RestaurantOrderService {
     }
 
     public RestaurantOrder updateOrderStatus(Long id, UpdateRestaurantOrderStatusDTO updateRestaurantOrderStatusDTO) {
-        OrderStatus newOrderStatus = OrderStatus.findValue(updateRestaurantOrderStatusDTO.newStatus());
-        if (Objects.isNull(newOrderStatus)) {
-            throw new InvalidOrderStatus("The new order status is invalid. Must be one of " + Arrays.toString(OrderStatus.values()));
-        }
         RestaurantOrder restaurantOrder = restaurantOrderRepo.findById(id)
                 .orElseThrow(() -> new DatabaseEntryNotFoundException("Restaurant Order not found in the database"));
-        switch (newOrderStatus) {
+
+        switch (updateRestaurantOrderStatusDTO.newStatus()) {
             case CANCELED -> restaurantOrder.cancelOrder();
             case ACCEPTED -> restaurantOrder.acceptOrder();
             case FINISHED -> restaurantOrder.finishOrder();
