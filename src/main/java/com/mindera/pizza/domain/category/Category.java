@@ -1,6 +1,7 @@
 package com.mindera.pizza.domain.category;
 
 import com.mindera.pizza.domain.DatabaseTimestamps;
+import com.mindera.pizza.utils.Errors;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -26,7 +27,7 @@ public class Category {
 
     public Category(String name) {
         if (name.isBlank()) {
-            throw new IllegalArgumentException("Invalid name");
+            throw new IllegalArgumentException(Errors.INVALID_NAME.toString());
         }
 
         this.name = name;

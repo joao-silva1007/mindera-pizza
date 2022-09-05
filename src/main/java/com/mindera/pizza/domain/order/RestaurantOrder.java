@@ -5,6 +5,7 @@ import com.mindera.pizza.domain.address.Address;
 import com.mindera.pizza.domain.client.Client;
 import com.mindera.pizza.domain.product.Product;
 import com.mindera.pizza.exceptions.InvalidStatusChangeException;
+import com.mindera.pizza.utils.Errors;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -63,15 +64,15 @@ public class RestaurantOrder {
     @Builder
     public RestaurantOrder(LocalDateTime orderDateTime, Address address, Client client) {
         if (orderDateTime.isAfter(LocalDateTime.now())) {
-            throw new IllegalArgumentException("Invalid order date time");
+            throw new IllegalArgumentException(Errors.INVALID_ORDER_DATE_TIME.toString());
         }
 
         if (address == null) {
-            throw new IllegalArgumentException("Invalid address");
+            throw new IllegalArgumentException(Errors.INVALID_ADDRESS.toString());
         }
 
         if (client == null) {
-            throw new IllegalArgumentException("Invalid client");
+            throw new IllegalArgumentException(Errors.INVALID_CLIENT.toString());
         }
         this.orderDateTime = orderDateTime;
         this.totalPrice = 0;
@@ -91,21 +92,21 @@ public class RestaurantOrder {
 
     public void finishOrder() {
         if (this.currentStatus != OrderStatus.ACCEPTED) {
-            throw new InvalidStatusChangeException(String.format("Cannot change status from %s to %s", this.currentStatus, OrderStatus.FINISHED));
+            throw new InvalidStatusChangeException(String.format(Errors.ILLEGAL_STATUS_CHANGE.toString(), this.currentStatus, OrderStatus.FINISHED));
         }
         changeStatus(OrderStatus.FINISHED);
     }
 
     public void cancelOrder() {
         if (!List.of(OrderStatus.RECEIVED, OrderStatus.ACCEPTED).contains(this.currentStatus)) {
-            throw new InvalidStatusChangeException(String.format("Cannot change status from %s to %s", this.currentStatus, OrderStatus.CANCELED));
+            throw new InvalidStatusChangeException(String.format(Errors.ILLEGAL_STATUS_CHANGE.toString(), this.currentStatus, OrderStatus.CANCELED));
         }
         changeStatus(OrderStatus.CANCELED);
     }
 
     public void acceptOrder() {
         if (this.currentStatus != OrderStatus.RECEIVED) {
-            throw new InvalidStatusChangeException(String.format("Cannot change status from %s to %s", this.currentStatus, OrderStatus.ACCEPTED));
+            throw new InvalidStatusChangeException(String.format(Errors.ILLEGAL_STATUS_CHANGE.toString(), this.currentStatus, OrderStatus.ACCEPTED));
         }
         changeStatus(OrderStatus.ACCEPTED);
     }

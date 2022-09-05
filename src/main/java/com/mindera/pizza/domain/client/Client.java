@@ -1,6 +1,7 @@
 package com.mindera.pizza.domain.client;
 
 import com.mindera.pizza.domain.DatabaseTimestamps;
+import com.mindera.pizza.utils.Errors;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -36,11 +37,11 @@ public class Client {
 
     public Client (String name, String email) {
         if (name.isBlank()) {
-            throw new IllegalArgumentException("Invalid name");
+            throw new IllegalArgumentException(Errors.INVALID_NAME.toString());
         }
 
         if (!verifyEmail(email)) {
-            throw new IllegalArgumentException("Invalid email");
+            throw new IllegalArgumentException(Errors.INVALID_EMAIL.toString());
         }
 
         this.name = name;
@@ -64,14 +65,14 @@ public class Client {
 
     public void setPhoneNumber(String phoneNumber) {
         if (!verifyPhoneNumber(phoneNumber)) {
-            throw new IllegalArgumentException("Invalid phone number");
+            throw new IllegalArgumentException(Errors.INVALID_PHONE_NUMBER.toString());
         }
         this.phoneNumber = phoneNumber;
     }
 
     public void setVatNumber(String vatNumber) {
         if (!verifyVatNumber(vatNumber)) {
-            throw new IllegalArgumentException("Invalid VAT Number");
+            throw new IllegalArgumentException(Errors.INVALID_VAT_NUMBER.toString());
         }
         this.vatNumber = vatNumber;
     }

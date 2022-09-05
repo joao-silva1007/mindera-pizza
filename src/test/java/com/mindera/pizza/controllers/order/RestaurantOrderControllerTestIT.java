@@ -14,6 +14,7 @@ import com.mindera.pizza.repositories.address.AddressRepo;
 import com.mindera.pizza.repositories.client.ClientRepo;
 import com.mindera.pizza.repositories.order.RestaurantOrderRepo;
 import com.mindera.pizza.repositories.product.ProductRepo;
+import com.mindera.pizza.utils.Errors;
 import lombok.val;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -94,7 +95,7 @@ public class RestaurantOrderControllerTestIT {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(new CreateRestaurantOrderDTO("2022-04-10 10:10:10", List.of(1L), 1L, 10L))))
                 .andExpect(MockMvcResultMatchers.status().is(400))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.errorMessage").value("Client not found in the database"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorMessage").value(String.format(Errors.ENTRY_NOT_FOUND.toString(), Client.class.getSimpleName())));
     }
 
     @Test
@@ -105,7 +106,7 @@ public class RestaurantOrderControllerTestIT {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(new CreateRestaurantOrderDTO("2022-04-10 10:10:10", List.of(2L), 1L, 1L))))
                 .andExpect(MockMvcResultMatchers.status().is(400))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.errorMessage").value("Products not found in the database"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorMessage").value(String.format(Errors.ENTRY_NOT_FOUND.toString(), Product.class.getSimpleName())));
     }
 
     @Test
@@ -116,7 +117,7 @@ public class RestaurantOrderControllerTestIT {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(new CreateRestaurantOrderDTO("2022-04-10 10:10:10", List.of(1L), 10L, 1L))))
                 .andExpect(MockMvcResultMatchers.status().is(400))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.errorMessage").value("Address not found in the database"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorMessage").value(String.format(Errors.ENTRY_NOT_FOUND.toString(), Address.class.getSimpleName())));
     }
 
     @Test
@@ -127,7 +128,7 @@ public class RestaurantOrderControllerTestIT {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(new CreateRestaurantOrderDTO("2023-04-10 10:10:10", List.of(1L), 1L, 1L))))
                 .andExpect(MockMvcResultMatchers.status().is(400))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.errorMessage").value("Invalid order date time"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorMessage").value(Errors.INVALID_ORDER_DATE_TIME.toString()));
     }
 
     @Test
@@ -209,7 +210,7 @@ public class RestaurantOrderControllerTestIT {
     public void findNonExisingOrderById() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/order/500"))
                 .andExpect(MockMvcResultMatchers.status().is(400))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.errorMessage").value("Order not found with the specified Id"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorMessage").value(String.format(Errors.ENTRY_BY_ID_NOT_FOUND.toString(), RestaurantOrder.class.getSimpleName())));
     }
 
     @Test
@@ -257,6 +258,6 @@ public class RestaurantOrderControllerTestIT {
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().is(400))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.errorMessage").value("Cannot change the order status to received"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorMessage").value(Errors.ILLEGAL_STATUS_CHANGE_TO_RECEIVED.toString()));
     }
 }

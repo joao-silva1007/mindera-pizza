@@ -4,6 +4,7 @@ import com.mindera.pizza.domain.DatabaseTimestamps;
 import com.mindera.pizza.domain.category.Category;
 import com.mindera.pizza.domain.ingredient.Ingredient;
 import com.mindera.pizza.domain.order.RestaurantOrder;
+import com.mindera.pizza.utils.Errors;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -52,19 +53,19 @@ public class Product {
 
     public Product(String name, float price, int stock, Category category) {
         if (name.isBlank()) {
-            throw new IllegalArgumentException("Invalid name");
+            throw new IllegalArgumentException(Errors.INVALID_NAME.toString());
         }
 
         if (price < 0) {
-            throw new IllegalArgumentException("Invalid price");
+            throw new IllegalArgumentException(Errors.INVALID_PRICE.toString());
         }
 
         if (stock < 0 ) {
-            throw new IllegalArgumentException("Invalid stock");
+            throw new IllegalArgumentException(Errors.INVALID_STOCK.toString());
         }
 
         if (category == null) {
-            throw new IllegalArgumentException("Invalid category");
+            throw new IllegalArgumentException(Errors.INVALID_CATEGORY.toString());
         }
         this.name = name;
         this.price = price;
