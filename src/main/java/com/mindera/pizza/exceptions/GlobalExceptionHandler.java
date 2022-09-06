@@ -1,5 +1,6 @@
 package com.mindera.pizza.exceptions;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -9,7 +10,7 @@ import java.time.LocalDateTime;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
-    @ExceptionHandler(value = {IllegalArgumentException.class, DatabaseEntryNotFoundException.class})
+    @ExceptionHandler(value = {IllegalArgumentException.class, DatabaseEntryNotFoundException.class, DataIntegrityViolationException.class})
     public ResponseEntity<Object> invalidInputException(Exception ex) {
         ExceptionBody body = ExceptionBody.builder()
                 .exception(ex)

@@ -3,6 +3,7 @@ package com.mindera.pizza.controllers.category;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
 import com.mindera.pizza.PizzaApplication;
+import com.mindera.pizza.domain.category.Category;
 import com.mindera.pizza.dto.category.CreateCategoryDTO;
 import com.mindera.pizza.repositories.category.CategoryRepo;
 import org.junit.jupiter.api.Test;
@@ -48,5 +49,17 @@ public class CategoryControllerIT {
                         .content(mapper.writeValueAsString(new CreateCategoryDTO(""))))
                 .andExpect(MockMvcResultMatchers.status().is(400))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorMessage").value("Invalid name"));
+    }
+
+    @Test
+    public void addCategoryWithExistingName() throws Exception {
+        categoryRepo.save(new Category("cat123"));
+        ObjectMapper mapper = new ObjectMapper();
+        mockMvc.perform(MockMvcRequestBuilders.post("/category")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(new CreateCategoryDTO("cat123"))))
+                .andExpect(MockMvcResultMatchers.status().is(400))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorMessage").value("A Category already exists with the inserted name"));
     }
 }
