@@ -1,13 +1,14 @@
 package com.mindera.pizza;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
 class PizzaApplicationTests {
 
-	/*@Test
+	@Test
 	void contextLoads() {
-	}*/
+	}
 
 }
