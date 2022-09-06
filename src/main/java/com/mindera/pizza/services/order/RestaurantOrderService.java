@@ -72,10 +72,14 @@ public class RestaurantOrderService {
             }
         }
 
-        return restaurantOrderRepo.findAll(spec);
+        List<RestaurantOrder> restaurantOrders = restaurantOrderRepo.findAll(spec);
+        logger.info("Fetched {} RestaurantOrders from the DB", restaurantOrders.size());
+        return restaurantOrders;
     }
 
     public RestaurantOrder findOrderById(Long orderId) {
-        return restaurantOrderRepo.findById(orderId).orElseThrow(() -> new DatabaseEntryNotFoundException("Order not found with the specified Id"));
+        RestaurantOrder restaurantOrder = restaurantOrderRepo.findById(orderId).orElseThrow(() -> new DatabaseEntryNotFoundException("Order not found with the specified Id"));
+        logger.info("Fetched RestaurantOrder with id {}", orderId);
+        return restaurantOrder;
     }
 }
