@@ -11,6 +11,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @AllArgsConstructor
@@ -31,8 +32,13 @@ public class CategoryService {
         }
     }
 
-    public List<Category> getCategories() {
-        List<Category> categories = categoryRepo.findAll();
+    public List<Category> getCategories(String categoryName) {
+        List<Category> categories;
+        if (Objects.isNull(categoryName)) {
+            categories = categoryRepo.findAll();
+        } else {
+            categories = categoryRepo.getCategoriesByNameContains(categoryName);
+        }
         logger.info("Fetched {} Categories from the DB", categories.size());
         return categories;
     }

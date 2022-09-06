@@ -22,7 +22,7 @@ public class CategoryController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Category>> getCategories() {
-        return new ResponseEntity<>(categoryService.getCategories(), HttpStatus.OK);
+    public ResponseEntity<List<Category>> getCategories(@RequestParam(required = false) String categoryName) {
+        return new ResponseEntity<>(categoryService.getCategories(categoryName), HttpStatus.OK);
     }
 }

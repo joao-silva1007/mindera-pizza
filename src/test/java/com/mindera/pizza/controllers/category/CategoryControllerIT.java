@@ -82,4 +82,14 @@ public class CategoryControllerIT {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.[1]").exists())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.[2]").doesNotExist());
     }
+
+    @Test
+    public void getCategoriesByName() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/category")
+                        .queryParam("categoryName", "Top"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$").isArray())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.[0].name").value("Toppings"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.[1]").doesNotExist());
+    }
 }
