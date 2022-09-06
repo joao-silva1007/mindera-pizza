@@ -14,8 +14,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@EqualsAndHashCode(exclude = {"ingredients", "restaurantOrders"})
-public class Product {
+@EqualsAndHashCode(exclude = {"ingredients", "restaurantOrders"}, callSuper = false)
+public class Product extends DatabaseTimestamps{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Getter
@@ -44,10 +44,6 @@ public class Product {
 
     @ManyToMany(mappedBy = "products", fetch = FetchType.EAGER)
     private Set<RestaurantOrder> restaurantOrders;
-
-    @Getter
-    @Embedded
-    private final DatabaseTimestamps timestamps = new DatabaseTimestamps();
 
     protected Product() {}
 

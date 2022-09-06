@@ -9,8 +9,8 @@ import lombok.Setter;
 import javax.persistence.*;
 
 @Entity
-@EqualsAndHashCode
-public class Category {
+@EqualsAndHashCode(callSuper = false)
+public class Category extends DatabaseTimestamps{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Getter
@@ -18,10 +18,6 @@ public class Category {
 
     @Getter @Setter
     private String name;
-
-    @Getter
-    @Embedded
-    private final DatabaseTimestamps timestamps = new DatabaseTimestamps();
 
     protected Category() {}
 

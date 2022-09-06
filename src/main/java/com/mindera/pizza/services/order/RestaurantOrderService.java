@@ -2,12 +2,14 @@ package com.mindera.pizza.services.order;
 
 import com.mindera.pizza.domain.address.Address;
 import com.mindera.pizza.domain.client.Client;
+import com.mindera.pizza.domain.order.OrderStatus;
 import com.mindera.pizza.domain.order.RestaurantOrder;
 import com.mindera.pizza.domain.order.RestaurantOrderSpecifications;
 import com.mindera.pizza.domain.product.Product;
 import com.mindera.pizza.dto.order.CreateRestaurantOrderDTO;
 import com.mindera.pizza.dto.order.UpdateRestaurantOrderStatusDTO;
 import com.mindera.pizza.exceptions.DatabaseEntryNotFoundException;
+import com.mindera.pizza.exceptions.InvalidStatusChangeException;
 import com.mindera.pizza.repositories.address.AddressRepo;
 import com.mindera.pizza.repositories.client.ClientRepo;
 import com.mindera.pizza.repositories.order.RestaurantOrderRepo;
@@ -64,7 +66,7 @@ public class RestaurantOrderService {
             case CANCELED -> restaurantOrder.cancelOrder();
             case ACCEPTED -> restaurantOrder.acceptOrder();
             case FINISHED -> restaurantOrder.finishOrder();
-            case RECEIVED -> throw new IllegalArgumentException(Errors.ILLEGAL_STATUS_CHANGE_TO_RECEIVED.toString());
+            case RECEIVED -> throw new InvalidStatusChangeException(Errors.ILLEGAL_STATUS_CHANGE_TO, OrderStatus.RECEIVED);
         }
         return restaurantOrderRepo.save(restaurantOrder);
     }

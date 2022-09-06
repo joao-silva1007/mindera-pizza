@@ -19,8 +19,8 @@ import java.util.List;
 import java.util.Set;
 
 @Entity
-@EqualsAndHashCode(exclude = {"products", "timestamps"})
-public class RestaurantOrder {
+@EqualsAndHashCode(exclude = {"products"}, callSuper = false)
+public class RestaurantOrder extends DatabaseTimestamps {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Getter
@@ -55,10 +55,6 @@ public class RestaurantOrder {
     @Getter
     private List<OrderStatusChange> orderStatusChanges;
 
-    @Getter
-    @Embedded
-    private final DatabaseTimestamps timestamps = new DatabaseTimestamps();
-
     protected RestaurantOrder() {}
 
     @Builder
@@ -92,21 +88,21 @@ public class RestaurantOrder {
 
     public void finishOrder() {
         if (this.currentStatus != OrderStatus.ACCEPTED) {
-            throw new InvalidStatusChangeException(String.format(Errors.ILLEGAL_STATUS_CHANGE.toString(), this.currentStatus, OrderStatus.FINISHED));
+            throw new InvalidStatusChangeException(Errors.ILLEGAL_STATUS_CHANGE, this.currentStatus, OrderStatus.FINISHED);
         }
         changeStatus(OrderStatus.FINISHED);
     }
 
     public void cancelOrder() {
         if (!List.of(OrderStatus.RECEIVED, OrderStatus.ACCEPTED).contains(this.currentStatus)) {
-            throw new InvalidStatusChangeException(String.format(Errors.ILLEGAL_STATUS_CHANGE.toString(), this.currentStatus, OrderStatus.CANCELED));
+            throw new InvalidStatusChangeException(Errors.ILLEGAL_STATUS_CHANGE, this.currentStatus, OrderStatus.CANCELED);
         }
         changeStatus(OrderStatus.CANCELED);
     }
 
     public void acceptOrder() {
         if (this.currentStatus != OrderStatus.RECEIVED) {
-            throw new InvalidStatusChangeException(String.format(Errors.ILLEGAL_STATUS_CHANGE.toString(), this.currentStatus, OrderStatus.ACCEPTED));
+            throw new InvalidStatusChangeException(Errors.ILLEGAL_STATUS_CHANGE, this.currentStatus, OrderStatus.ACCEPTED);
         }
         changeStatus(OrderStatus.ACCEPTED);
     }

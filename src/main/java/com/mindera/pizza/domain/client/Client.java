@@ -10,8 +10,8 @@ import javax.persistence.*;
 import java.util.regex.Pattern;
 
 @Entity
-@EqualsAndHashCode
-public class Client {
+@EqualsAndHashCode(callSuper = false)
+public class Client extends DatabaseTimestamps{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Getter
@@ -28,10 +28,6 @@ public class Client {
 
     @Getter @Setter
     private String name;
-
-    @Getter
-    @Embedded
-    private final DatabaseTimestamps timestamps = new DatabaseTimestamps();
 
     protected Client() {}
 

@@ -258,6 +258,6 @@ public class RestaurantOrderControllerTestIT {
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().is(400))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.errorMessage").value(Errors.ILLEGAL_STATUS_CHANGE_TO_RECEIVED.toString()));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorMessage").value(String.format(Errors.ILLEGAL_STATUS_CHANGE_TO.toString(), OrderStatus.RECEIVED)));
     }
 }

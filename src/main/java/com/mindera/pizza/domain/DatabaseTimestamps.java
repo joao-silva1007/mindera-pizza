@@ -3,14 +3,12 @@ package com.mindera.pizza.domain;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
-import javax.persistence.Embeddable;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
-@Embeddable
+@MappedSuperclass
 @EqualsAndHashCode
-public class DatabaseTimestamps {
+public abstract class DatabaseTimestamps {
 
     @Getter
     private LocalDateTime createdAt;

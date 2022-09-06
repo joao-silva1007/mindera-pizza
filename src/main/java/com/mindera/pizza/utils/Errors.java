@@ -4,7 +4,7 @@ public enum Errors {
     ENTRY_NOT_FOUND("%s not found in the database"),
     ENTRY_BY_ID_NOT_FOUND("%s not found with the specified Id"),
     ILLEGAL_STATUS_CHANGE("Cannot change status from %s to %s"),
-    ILLEGAL_STATUS_CHANGE_TO_RECEIVED("Cannot change the order status to received"),
+    ILLEGAL_STATUS_CHANGE_TO("Cannot change the order status to %s"),
     INVALID_ORDER_DATE_TIME("Invalid order date time"),
     INVALID_ADDRESS("Invalid address"),
     INVALID_CLIENT("Invalid client"),

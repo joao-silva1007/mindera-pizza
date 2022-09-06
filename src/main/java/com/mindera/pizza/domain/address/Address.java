@@ -11,8 +11,8 @@ import javax.persistence.*;
 import java.util.regex.Pattern;
 
 @Entity
-@EqualsAndHashCode
-public class Address {
+@EqualsAndHashCode(callSuper = false)
+public class Address extends DatabaseTimestamps{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Getter
@@ -39,10 +39,6 @@ public class Address {
     @ManyToOne
     @Getter @Setter
     private Client client;
-
-    @Getter
-    @Embedded
-    private final DatabaseTimestamps timestamps = new DatabaseTimestamps();
 
     protected Address() {}
 
