@@ -26,7 +26,7 @@ import java.util.Objects;
 @Service
 @AllArgsConstructor
 public class RestaurantOrderService {
-    private static final Logger logger = LogManager.getLogger(GlobalExceptionHandler.class);
+    private static final Logger logger = LogManager.getLogger(RestaurantOrderService.class);
 
     private final RestaurantOrderRepo restaurantOrderRepo;
 
