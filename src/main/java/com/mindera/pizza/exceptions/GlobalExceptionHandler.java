@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 public class GlobalExceptionHandler {
     private static final Logger logger = LogManager.getLogger(GlobalExceptionHandler.class);
 
-    @ExceptionHandler(value = {IllegalArgumentException.class, DatabaseEntryNotFoundException.class, InvalidStatusChangeException.class, DataIntegrityViolationException.class})
+    @ExceptionHandler(value = {IllegalArgumentException.class, DatabaseEntryNotFoundException.class, InvalidStatusChangeException.class, UniqueValueViolationException.class})
     public ResponseEntity<Object> invalidInputException(Exception ex) {
         ExceptionBody body = ExceptionBody.builder()
                 .exception(ex)
