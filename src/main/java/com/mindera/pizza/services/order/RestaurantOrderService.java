@@ -9,6 +9,7 @@ import com.mindera.pizza.domain.product.Product;
 import com.mindera.pizza.dto.order.CreateRestaurantOrderDTO;
 import com.mindera.pizza.dto.order.UpdateRestaurantOrderStatusDTO;
 import com.mindera.pizza.exceptions.DatabaseEntryNotFoundException;
+import com.mindera.pizza.exceptions.GlobalExceptionHandler;
 import com.mindera.pizza.exceptions.InvalidStatusChangeException;
 import com.mindera.pizza.repositories.address.AddressRepo;
 import com.mindera.pizza.repositories.client.ClientRepo;
@@ -17,6 +18,8 @@ import com.mindera.pizza.repositories.product.ProductRepo;
 import com.mindera.pizza.utils.DateTimeUtils;
 import com.mindera.pizza.utils.Errors;
 import lombok.AllArgsConstructor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +30,8 @@ import java.util.Objects;
 @Service
 @AllArgsConstructor
 public class RestaurantOrderService {
+    private static final Logger logger = LogManager.getLogger(GlobalExceptionHandler.class);
+
     private final RestaurantOrderRepo restaurantOrderRepo;
 
     private final AddressRepo addressRepo;
@@ -55,7 +60,10 @@ public class RestaurantOrderService {
 
         products.forEach(restaurantOrder::addProduct);
 
-        return restaurantOrderRepo.save(restaurantOrder);
+        RestaurantOrder savedRO = restaurantOrderRepo.save(restaurantOrder);
+
+        logger.info("Added a new restaurant order with id {} to the DB", savedRO.getId());
+        return savedRO;
     }
 
     public RestaurantOrder updateOrderStatus(Long id, UpdateRestaurantOrderStatusDTO updateRestaurantOrderStatusDTO) {
@@ -81,10 +89,14 @@ public class RestaurantOrderService {
             }
         }
 
-        return restaurantOrderRepo.findAll(spec);
+        List<RestaurantOrder> restaurantOrders = restaurantOrderRepo.findAll(spec);
+        logger.info("Fetched {} RestaurantOrders from the DB", restaurantOrders.size());
+        return restaurantOrders;
     }
 
     public RestaurantOrder findOrderById(Long orderId) {
-        return restaurantOrderRepo.findById(orderId).orElseThrow(() -> new DatabaseEntryNotFoundException(String.format(Errors.ENTRY_BY_ID_NOT_FOUND.toString(), RestaurantOrder.class.getSimpleName())));
+        RestaurantOrder restaurantOrder = restaurantOrderRepo.findById(orderId).orElseThrow(() -> new DatabaseEntryNotFoundException(String.format(Errors.ENTRY_BY_ID_NOT_FOUND.toString(), RestaurantOrder.class.getSimpleName())));
+        logger.info("Fetched RestaurantOrder with id {}", orderId);
+        return restaurantOrder;
     }
 }
