@@ -1,5 +1,6 @@
 package com.mindera.pizza.exceptions;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
@@ -13,7 +14,7 @@ import java.time.LocalDateTime;
 public class GlobalExceptionHandler {
     private static final Logger logger = LogManager.getLogger(GlobalExceptionHandler.class);
 
-    @ExceptionHandler(value = {IllegalArgumentException.class, DatabaseEntryNotFoundException.class, InvalidStatusChangeException.class})
+    @ExceptionHandler(value = {IllegalArgumentException.class, DatabaseEntryNotFoundException.class, InvalidStatusChangeException.class, UniqueValueViolationException.class})
     public ResponseEntity<Object> invalidInputException(Exception ex) {
         ExceptionBody body = ExceptionBody.builder()
                 .exception(ex)

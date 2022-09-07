@@ -1,5 +1,6 @@
 package com.mindera.pizza.domain.category;
 
+import lombok.Builder;
 import com.mindera.pizza.domain.DatabaseTimestamps;
 import com.mindera.pizza.utils.Errors;
 import lombok.EqualsAndHashCode;
@@ -17,10 +18,12 @@ public class Category extends DatabaseTimestamps{
     private Long id;
 
     @Getter @Setter
+    @Column(unique = true)
     private String name;
 
     protected Category() {}
 
+    @Builder
     public Category(String name) {
         if (name.isBlank()) {
             throw new IllegalArgumentException(Errors.INVALID_NAME.toString());

@@ -5,6 +5,7 @@ public enum Errors {
     ENTRY_BY_ID_NOT_FOUND("%s not found with the specified Id"),
     ILLEGAL_STATUS_CHANGE("Cannot change status from %s to %s"),
     ILLEGAL_STATUS_CHANGE_TO("Cannot change the order status to %s"),
+    UNIQUE_VALUE_VIOLATION("A %s already exists with the inserted %s"),
     INVALID_ORDER_DATE_TIME("Invalid order date time"),
     INVALID_ADDRESS("Invalid address"),
     INVALID_CLIENT("Invalid client"),
