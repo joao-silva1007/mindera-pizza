@@ -13,6 +13,9 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Objects;
+
 @Service
 @AllArgsConstructor
 public class CategoryService {
@@ -30,9 +33,19 @@ public class CategoryService {
             logger.info(LoggingMessages.ENTRY_ADDED_TO_DB.toString(), savedCat.getId());
             return savedCat;
         } catch (DataIntegrityViolationException e) {
-            logger.error(LoggingMessages.UNIQUE_ENTRY_VIOLATION.toString(), Category.class.getSimpleName(), "name", category.getName());
             throw new UniqueValueViolationException(Category.class.getSimpleName(), "name");
         }
+    }
+
+    public List<Category> getCategories(String categoryName) {
+        List<Category> categories;
+        if (Objects.isNull(categoryName)) {
+            categories = categoryRepo.findAll();
+        } else {
+            categories = categoryRepo.getCategoriesByNameContains(categoryName);
+        }
+        logger.info(LoggingMessages.ENTRIES_FETCHED_FROM_DB.toString(), categories.size(), Category.class.getSimpleName());
+        return categories;
     }
 
     public Category findCategoryById(Long categoryId) {

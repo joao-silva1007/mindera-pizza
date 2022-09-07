@@ -8,6 +8,8 @@ import com.mindera.pizza.dto.category.CreateCategoryDTO;
 import com.mindera.pizza.repositories.category.CategoryRepo;
 import org.junit.jupiter.api.BeforeAll;
 import com.mindera.pizza.utils.Errors;
+import lombok.val;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -61,7 +63,8 @@ public class CategoryControllerIT {
 
     @Test
     public void addCategoryWithExistingName() throws Exception {
-        categoryRepo.save(new Category("cat123"));
+        val cat = new Category("cat123");
+        Long id = categoryRepo.save(cat).getId();
         ObjectMapper mapper = new ObjectMapper();
         mockMvc.perform(MockMvcRequestBuilders.post("/category")
                         .accept(MediaType.APPLICATION_JSON)
@@ -70,6 +73,27 @@ public class CategoryControllerIT {
                 .andExpect(MockMvcResultMatchers.status().is(400))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorMessage")
                         .value(String.format(Errors.UNIQUE_VALUE_VIOLATION.toString(), Category.class.getSimpleName(), "name")));
+        categoryRepo.deleteById(id);
+    }
+
+    @Test
+    public void getCategories() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/category"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$").isArray())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.[0]").exists())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.[1]").exists())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.[2]").doesNotExist());
+    }
+
+    @Test
+    public void getCategoriesByName() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/category")
+                        .queryParam("categoryName", "Top"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$").isArray())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.[0].name").value("Toppings"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.[1]").doesNotExist());
     }
 
     @Test

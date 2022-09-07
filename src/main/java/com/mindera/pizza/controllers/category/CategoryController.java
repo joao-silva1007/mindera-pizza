@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/category")
 @AllArgsConstructor
@@ -17,6 +19,11 @@ public class CategoryController {
     @PostMapping
     public ResponseEntity<Category> createCategory(@RequestBody CreateCategoryDTO categoryDTO) {
         return new ResponseEntity<>(categoryService.createCategory(categoryDTO), HttpStatus.CREATED);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Category>> getCategories(@RequestParam(required = false) String categoryName) {
+        return new ResponseEntity<>(categoryService.getCategories(categoryName), HttpStatus.OK);
     }
 
     @GetMapping(path = "/{id}")
