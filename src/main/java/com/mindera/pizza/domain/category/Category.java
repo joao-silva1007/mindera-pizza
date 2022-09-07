@@ -1,18 +1,16 @@
 package com.mindera.pizza.domain.category;
 
+import com.mindera.pizza.domain.DatabaseTimestamps;
+import com.mindera.pizza.utils.Errors;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import java.time.LocalDateTime;
+import javax.persistence.*;
 
 @Entity
-@EqualsAndHashCode
-public class Category {
+@EqualsAndHashCode(callSuper = false)
+public class Category extends DatabaseTimestamps{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Getter
@@ -21,21 +19,13 @@ public class Category {
     @Getter @Setter
     private String name;
 
-    @Getter
-    private LocalDateTime createdAt;
-
-    @Getter @Setter
-    private LocalDateTime updatedAt;
-
     protected Category() {}
 
     public Category(String name) {
         if (name.isBlank()) {
-            throw new IllegalArgumentException("Invalid name");
+            throw new IllegalArgumentException(Errors.INVALID_NAME.toString());
         }
 
         this.name = name;
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
     }
 }
