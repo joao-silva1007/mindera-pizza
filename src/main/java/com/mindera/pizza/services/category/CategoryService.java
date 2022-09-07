@@ -51,7 +51,7 @@ public class CategoryService {
 
     public Category findCategoryById(Long categoryId) {
         Category category = categoryRepo.findById(categoryId)
-                .orElseThrow(() -> new DatabaseEntryNotFoundException(String.format(Errors.ENTRY_BY_ID_NOT_FOUND.toString(), Category.class.getSimpleName())));
+                .orElseThrow(() -> new DatabaseEntryNotFoundException(Errors.ENTRY_BY_ID_NOT_FOUND, Category.class.getSimpleName()));
         logger.info(LoggingMessages.SINGLE_ENTRY_FETCHED_FROM_DB.toString(), Category.class.getSimpleName(), categoryId);
         return category;
     }

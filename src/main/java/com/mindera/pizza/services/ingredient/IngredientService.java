@@ -41,7 +41,7 @@ public class IngredientService {
 
     public Ingredient findIngredientById(Long ingredientId) {
         return ingredientRepo.findById(ingredientId)
-                .orElseThrow(() -> new DatabaseEntryNotFoundException(String.format(Errors.ENTRY_BY_ID_NOT_FOUND.toString(), Ingredient.class.getSimpleName())));
+                .orElseThrow(() -> new DatabaseEntryNotFoundException(Errors.ENTRY_BY_ID_NOT_FOUND, Ingredient.class.getSimpleName()));
     }
 
     public List<Ingredient> getIngredients(String ingredientName) {

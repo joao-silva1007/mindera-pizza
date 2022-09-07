@@ -43,10 +43,10 @@ public class RestaurantOrderService {
 
     public RestaurantOrder createOrder(CreateRestaurantOrderDTO restaurantOrderDTO) {
         Address address = addressRepo.findById(restaurantOrderDTO.addressId())
-                .orElseThrow(() -> new DatabaseEntryNotFoundException(String.format(Errors.ENTRY_NOT_FOUND.toString(), Address.class.getSimpleName())));
+                .orElseThrow(() -> new DatabaseEntryNotFoundException(Errors.ENTRY_NOT_FOUND, Address.class.getSimpleName()));
 
         Client client = clientRepo.findById(restaurantOrderDTO.clientId())
-                .orElseThrow(() -> new DatabaseEntryNotFoundException(String.format(Errors.ENTRY_NOT_FOUND.toString(), Client.class.getSimpleName())));
+                .orElseThrow(() -> new DatabaseEntryNotFoundException(Errors.ENTRY_NOT_FOUND, Client.class.getSimpleName()));
 
         RestaurantOrder restaurantOrder = RestaurantOrder.builder()
                 .orderDateTime(DateTimeUtils.stringToLocalDateTime(restaurantOrderDTO.orderDateTime()))
@@ -56,7 +56,7 @@ public class RestaurantOrderService {
 
         List<Product> products = productRepo.findAllById(restaurantOrderDTO.productIds());
         if (products.isEmpty()) {
-            throw new DatabaseEntryNotFoundException(String.format(Errors.ENTRY_NOT_FOUND.toString(), Product.class.getSimpleName()));
+            throw new DatabaseEntryNotFoundException(Errors.ENTRY_NOT_FOUND, Product.class.getSimpleName());
         }
 
         products.forEach(restaurantOrder::addProduct);
@@ -69,7 +69,7 @@ public class RestaurantOrderService {
 
     public RestaurantOrder updateOrderStatus(Long id, UpdateRestaurantOrderStatusDTO updateRestaurantOrderStatusDTO) {
         RestaurantOrder restaurantOrder = restaurantOrderRepo.findById(id)
-                .orElseThrow(() -> new DatabaseEntryNotFoundException(String.format(Errors.ENTRY_NOT_FOUND.toString(), RestaurantOrder.class.getSimpleName())));
+                .orElseThrow(() -> new DatabaseEntryNotFoundException(Errors.ENTRY_NOT_FOUND, RestaurantOrder.class.getSimpleName()));
 
         switch (updateRestaurantOrderStatusDTO.newStatus()) {
             case CANCELED -> restaurantOrder.cancelOrder();
@@ -96,7 +96,7 @@ public class RestaurantOrderService {
     }
 
     public RestaurantOrder findOrderById(Long orderId) {
-        RestaurantOrder restaurantOrder = restaurantOrderRepo.findById(orderId).orElseThrow(() -> new DatabaseEntryNotFoundException(String.format(Errors.ENTRY_BY_ID_NOT_FOUND.toString(), RestaurantOrder.class.getSimpleName())));
+        RestaurantOrder restaurantOrder = restaurantOrderRepo.findById(orderId).orElseThrow(() -> new DatabaseEntryNotFoundException(Errors.ENTRY_BY_ID_NOT_FOUND, RestaurantOrder.class.getSimpleName()));
         logger.info(LoggingMessages.SINGLE_ENTRY_FETCHED_FROM_DB.toString(), RestaurantOrder.class.getSimpleName(), orderId);
         return restaurantOrder;
     }
