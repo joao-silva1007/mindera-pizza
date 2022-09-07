@@ -44,7 +44,10 @@ public class CategoryControllerIT {
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/category")
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(new CreateCategoryDTO("drinks"))))
+                        .content(mapper.writeValueAsString(CreateCategoryDTO
+                                .builder()
+                                .name("drinks")
+                                .build())))
                 .andExpect(MockMvcResultMatchers.status().is(201))
                 .andReturn();
         int id = JsonPath.parse(result.getResponse().getContentAsString()).read("$.id");
@@ -57,7 +60,10 @@ public class CategoryControllerIT {
         mockMvc.perform(MockMvcRequestBuilders.post("/category")
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(new CreateCategoryDTO(""))))
+                        .content(mapper.writeValueAsString(CreateCategoryDTO
+                                .builder()
+                                .name("")
+                                .build())))
                 .andExpect(MockMvcResultMatchers.status().is(400))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorMessage").value(DataValidationConstants.INVALID_NAME));
     }
@@ -70,7 +76,10 @@ public class CategoryControllerIT {
         mockMvc.perform(MockMvcRequestBuilders.post("/category")
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(new CreateCategoryDTO("cat123"))))
+                        .content(mapper.writeValueAsString(CreateCategoryDTO
+                                .builder()
+                                .name("cat123")
+                                .build())))
                 .andExpect(MockMvcResultMatchers.status().is(400))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorMessage")
                         .value(String.format(Errors.UNIQUE_VALUE_VIOLATION.toString(), Category.class.getSimpleName(), "name")));

@@ -52,7 +52,11 @@ public class IngredientControllerIT {
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/ingredient")
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(new CreateIngredientDTO("Pepperoni", 10))))
+                        .content(mapper.writeValueAsString(CreateIngredientDTO
+                                .builder()
+                                .name("Pepperoni")
+                                .stock(10)
+                                .build())))
                 .andExpect(MockMvcResultMatchers.status().is(201))
                 .andReturn();
         int id = JsonPath.parse(result.getResponse().getContentAsString()).read("$.id");
@@ -65,7 +69,11 @@ public class IngredientControllerIT {
         mockMvc.perform(MockMvcRequestBuilders.post("/ingredient")
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(new CreateIngredientDTO("", 10))))
+                        .content(mapper.writeValueAsString(CreateIngredientDTO
+                                .builder()
+                                .name("")
+                                .stock(10)
+                                .build())))
                 .andExpect(MockMvcResultMatchers.status().is(400))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorMessage").value(DataValidationConstants.INVALID_NAME));
     }
@@ -78,7 +86,11 @@ public class IngredientControllerIT {
         mockMvc.perform(MockMvcRequestBuilders.post("/ingredient")
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(new CreateIngredientDTO("Ham", 5))))
+                        .content(mapper.writeValueAsString(CreateIngredientDTO
+                                .builder()
+                                .name("Ham")
+                                .stock(5)
+                                .build())))
                 .andExpect(MockMvcResultMatchers.status().is(400))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorMessage")
                         .value(String.format(Errors.UNIQUE_VALUE_VIOLATION.toString(), Ingredient.class.getSimpleName(), "name")));
