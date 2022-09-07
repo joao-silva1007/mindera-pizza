@@ -7,6 +7,7 @@ import com.mindera.pizza.domain.category.Category;
 import com.mindera.pizza.dto.category.CreateCategoryDTO;
 import com.mindera.pizza.repositories.category.CategoryRepo;
 import org.junit.jupiter.api.BeforeAll;
+import com.mindera.pizza.utils.Errors;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -55,7 +56,7 @@ public class CategoryControllerIT {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(new CreateCategoryDTO(""))))
                 .andExpect(MockMvcResultMatchers.status().is(400))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.errorMessage").value("Invalid name"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorMessage").value(Errors.INVALID_NAME.toString()));
     }
 
     @Test
@@ -67,7 +68,8 @@ public class CategoryControllerIT {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(new CreateCategoryDTO("cat123"))))
                 .andExpect(MockMvcResultMatchers.status().is(400))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.errorMessage").value("A Category already exists with the inserted name"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorMessage")
+                        .value(String.format(Errors.UNIQUE_VALUE_VIOLATION.toString(), Category.class.getSimpleName(), "name")));
     }
 
     @Test

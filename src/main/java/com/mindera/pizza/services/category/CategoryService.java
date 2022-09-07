@@ -4,6 +4,7 @@ import com.mindera.pizza.domain.category.Category;
 import com.mindera.pizza.dto.category.CreateCategoryDTO;
 import com.mindera.pizza.exceptions.DatabaseEntryNotFoundException;
 import com.mindera.pizza.exceptions.GlobalExceptionHandler;
+import com.mindera.pizza.exceptions.UniqueValueViolationException;
 import com.mindera.pizza.repositories.category.CategoryRepo;
 import lombok.AllArgsConstructor;
 import org.apache.logging.log4j.LogManager;
@@ -29,7 +30,7 @@ public class CategoryService {
             return savedCat;
         } catch (DataIntegrityViolationException e) {
             logger.error("Attempted to create a category with an existing name ({})", category.getName());
-            throw new DataIntegrityViolationException("A Category already exists with the inserted name");
+            throw new UniqueValueViolationException(Category.class.getSimpleName(), "name");
         }
     }
 

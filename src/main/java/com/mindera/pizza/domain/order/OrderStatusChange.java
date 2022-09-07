@@ -9,7 +9,7 @@ import javax.persistence.Enumerated;
 import java.time.LocalDateTime;
 
 @Embeddable
-@EqualsAndHashCode
+@EqualsAndHashCode(exclude = "changeDateTime")
 public class OrderStatusChange {
     @Enumerated(EnumType.STRING)
     @Getter

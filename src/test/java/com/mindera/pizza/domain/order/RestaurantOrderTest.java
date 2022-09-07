@@ -80,9 +80,10 @@ class RestaurantOrderTest {
         Category cat = new Category("name");
         Product p = new Product("product1", 10.2f, 5, cat);
         RestaurantOrder ro = new RestaurantOrder(LocalDateTime.now(), a, c);
+        ro.acceptOrder();
         ro.finishOrder();
 
-        assertEquals(OrderStatus.FINISHED, ro.getOrderStatusChanges().get(1).getOrderStatus());
+        assertEquals(OrderStatus.FINISHED, ro.getCurrentStatus());
     }
 
     @Test
@@ -94,7 +95,7 @@ class RestaurantOrderTest {
         RestaurantOrder ro = new RestaurantOrder(LocalDateTime.now(), a, c);
         ro.cancelOrder();
 
-        assertEquals(OrderStatus.CANCELED, ro.getOrderStatusChanges().get(1).getOrderStatus());
+        assertEquals(OrderStatus.CANCELED, ro.getCurrentStatus());
     }
 
     @Test
@@ -106,6 +107,6 @@ class RestaurantOrderTest {
         RestaurantOrder ro = new RestaurantOrder(LocalDateTime.now(), a, c);
         ro.acceptOrder();
 
-        assertEquals(OrderStatus.ACCEPTED, ro.getOrderStatusChanges().get(1).getOrderStatus());
+        assertEquals(OrderStatus.ACCEPTED, ro.getCurrentStatus());
     }
 }
