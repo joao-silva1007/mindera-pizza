@@ -4,6 +4,7 @@ import com.mindera.pizza.domain.category.Category;
 import com.mindera.pizza.dto.category.CreateCategoryDTO;
 import com.mindera.pizza.exceptions.UniqueValueViolationException;
 import com.mindera.pizza.repositories.category.CategoryRepo;
+import com.mindera.pizza.utils.LoggingMessages;
 import lombok.AllArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -39,7 +40,7 @@ public class CategoryService {
         } else {
             categories = categoryRepo.getCategoriesByNameContains(categoryName);
         }
-        logger.info("Fetched {} Categories from the DB", categories.size());
+        logger.info(LoggingMessages.ENTRIES_FETCHED_FROM_DB.toString(), categories.size(), Category.class.getSimpleName());
         return categories;
     }
 }
