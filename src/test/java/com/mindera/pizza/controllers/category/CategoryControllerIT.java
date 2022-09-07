@@ -6,6 +6,7 @@ import com.mindera.pizza.PizzaApplication;
 import com.mindera.pizza.domain.category.Category;
 import com.mindera.pizza.dto.category.CreateCategoryDTO;
 import com.mindera.pizza.repositories.category.CategoryRepo;
+import org.junit.jupiter.api.BeforeAll;
 import com.mindera.pizza.utils.Errors;
 import lombok.val;
 import org.junit.jupiter.api.BeforeAll;
@@ -93,5 +94,20 @@ public class CategoryControllerIT {
                 .andExpect(MockMvcResultMatchers.jsonPath("$").isArray())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.[0].name").value("Toppings"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.[1]").doesNotExist());
+    }
+
+    @Test
+    public void findExistingCategoryById() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/category/2"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.name").value("Toppings"));
+    }
+
+    @Test
+    public void findNonExistingCategoryById() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/category/15555"))
+                .andExpect(MockMvcResultMatchers.status().is(400))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorMessage")
+                        .value(String.format(Errors.ENTRY_BY_ID_NOT_FOUND.toString(), Category.class.getSimpleName())));
     }
 }
