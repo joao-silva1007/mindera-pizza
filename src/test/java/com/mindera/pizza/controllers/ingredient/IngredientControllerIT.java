@@ -6,6 +6,7 @@ import com.mindera.pizza.PizzaApplication;
 import com.mindera.pizza.domain.ingredient.Ingredient;
 import com.mindera.pizza.dto.ingredient.CreateIngredientDTO;
 import com.mindera.pizza.repositories.ingredient.IngredientRepo;
+import com.mindera.pizza.utils.DataValidationConstants;
 import com.mindera.pizza.utils.Errors;
 import lombok.val;
 import org.junit.jupiter.api.AfterAll;
@@ -66,7 +67,7 @@ public class IngredientControllerIT {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(new CreateIngredientDTO("", 10))))
                 .andExpect(MockMvcResultMatchers.status().is(400))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.errorMessage").value(Errors.INVALID_NAME.toString()));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorMessage").value(DataValidationConstants.INVALID_NAME));
     }
 
     @Test

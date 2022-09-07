@@ -2,13 +2,17 @@ package com.mindera.pizza.domain.ingredient;
 
 import com.mindera.pizza.domain.DatabaseTimestamps;
 import com.mindera.pizza.domain.product.Product;
+import com.mindera.pizza.utils.DataValidationConstants;
 import com.mindera.pizza.utils.Errors;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.validation.annotation.Validated;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Positive;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -22,9 +26,11 @@ public class Ingredient extends DatabaseTimestamps{
 
     @Getter @Setter
     @Column(unique = true)
+    @NotBlank(message = DataValidationConstants.INVALID_NAME)
     private String name;
 
     @Getter @Setter
+    @Positive(message = DataValidationConstants.INVALID_STOCK)
     private int stock;
 
     @ManyToMany(mappedBy = "ingredients", fetch = FetchType.EAGER)
@@ -35,14 +41,6 @@ public class Ingredient extends DatabaseTimestamps{
 
     @Builder
     public Ingredient(String name, int stock) {
-        if (name.isBlank()) {
-            throw new IllegalArgumentException(Errors.INVALID_NAME.toString());
-        }
-
-        if (stock < 0) {
-            throw new IllegalArgumentException(Errors.INVALID_STOCK.toString());
-        }
-
         this.name = name;
         this.stock = stock;
         this.products = new HashSet<>();

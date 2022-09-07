@@ -33,6 +33,7 @@ public class CategoryService {
             logger.info(LoggingMessages.ENTRY_ADDED_TO_DB.toString(), savedCat.getId());
             return savedCat;
         } catch (DataIntegrityViolationException e) {
+            logger.error(LoggingMessages.UNIQUE_ENTRY_VIOLATION.toString(), Category.class.getSimpleName(), "name", category.getName());
             throw new UniqueValueViolationException(Category.class.getSimpleName(), "name");
         }
     }

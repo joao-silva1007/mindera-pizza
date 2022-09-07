@@ -5,6 +5,7 @@ import com.mindera.pizza.domain.address.Address;
 import com.mindera.pizza.domain.client.Client;
 import com.mindera.pizza.domain.product.Product;
 import com.mindera.pizza.exceptions.InvalidStatusChangeException;
+import com.mindera.pizza.utils.DataValidationConstants;
 import com.mindera.pizza.utils.Errors;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -12,6 +13,9 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Past;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -27,17 +31,20 @@ public class RestaurantOrder extends DatabaseTimestamps {
     private Long id;
 
     @Getter @Setter
+    @Past(message = DataValidationConstants.INVALID_ORDER_DATE_TIME)
     private LocalDateTime orderDateTime;
 
-    @Getter @Setter
+    @Getter
     private float totalPrice;
 
     @ManyToOne
     @Getter @Setter
+    @NotNull(message = DataValidationConstants.INVALID_ADDRESS)
     private Address address;
 
     @ManyToOne
     @Getter @Setter
+    @NotNull(message = DataValidationConstants.INVALID_CLIENT)
     private Client client;
 
     @ManyToMany(fetch = FetchType.EAGER)
@@ -59,17 +66,6 @@ public class RestaurantOrder extends DatabaseTimestamps {
 
     @Builder
     public RestaurantOrder(LocalDateTime orderDateTime, Address address, Client client) {
-        if (orderDateTime.isAfter(LocalDateTime.now())) {
-            throw new IllegalArgumentException(Errors.INVALID_ORDER_DATE_TIME.toString());
-        }
-
-        if (address == null) {
-            throw new IllegalArgumentException(Errors.INVALID_ADDRESS.toString());
-        }
-
-        if (client == null) {
-            throw new IllegalArgumentException(Errors.INVALID_CLIENT.toString());
-        }
         this.orderDateTime = orderDateTime;
         this.totalPrice = 0;
         this.address = address;

@@ -6,6 +6,7 @@ import com.mindera.pizza.PizzaApplication;
 import com.mindera.pizza.domain.category.Category;
 import com.mindera.pizza.dto.category.CreateCategoryDTO;
 import com.mindera.pizza.repositories.category.CategoryRepo;
+import com.mindera.pizza.utils.DataValidationConstants;
 import org.junit.jupiter.api.BeforeAll;
 import com.mindera.pizza.utils.Errors;
 import lombok.val;
@@ -58,7 +59,7 @@ public class CategoryControllerIT {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(new CreateCategoryDTO(""))))
                 .andExpect(MockMvcResultMatchers.status().is(400))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.errorMessage").value(Errors.INVALID_NAME.toString()));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorMessage").value(DataValidationConstants.INVALID_NAME));
     }
 
     @Test

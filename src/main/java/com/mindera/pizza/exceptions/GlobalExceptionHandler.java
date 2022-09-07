@@ -8,7 +8,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Stream;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -17,13 +22,25 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = {IllegalArgumentException.class, DatabaseEntryNotFoundException.class, InvalidStatusChangeException.class, UniqueValueViolationException.class})
     public ResponseEntity<Object> invalidInputException(Exception ex) {
         ExceptionBody body = ExceptionBody.builder()
-                .exception(ex)
+                .exception(ex.getMessage())
                 .statusCode(HttpStatus.BAD_REQUEST)
                 .timestamp(LocalDateTime.now())
                 .build();
 
         logger.error(ex.getStackTrace()[0]);
         logger.error(ex.getMessage());
+        return new ResponseEntity<>(body.toMap(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(value = {ConstraintViolationException.class})
+    public ResponseEntity<Object> dataValidationError(ConstraintViolationException exception) {
+        List<String> validationErrors = exception.getConstraintViolations().stream().map(ConstraintViolation::getMessage).toList();
+        ExceptionBody body = ExceptionBody.builder()
+                .exception(validationErrors)
+                .statusCode(HttpStatus.BAD_REQUEST)
+                .timestamp(LocalDateTime.now())
+                .build();
+
         return new ResponseEntity<>(body.toMap(), HttpStatus.BAD_REQUEST);
     }
 }

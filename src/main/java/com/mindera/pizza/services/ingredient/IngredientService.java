@@ -34,6 +34,7 @@ public class IngredientService {
             logger.info(LoggingMessages.ENTRY_ADDED_TO_DB.toString(), Ingredient.class.getSimpleName(), savedIngredient.getId());
             return savedIngredient;
         } catch (DataIntegrityViolationException e) {
+            logger.error(LoggingMessages.UNIQUE_ENTRY_VIOLATION.toString(), Ingredient.class.getSimpleName(), "name", ingredient.getName());
             throw new UniqueValueViolationException(Ingredient.class.getSimpleName(), "name");
         }
     }

@@ -1,5 +1,6 @@
 package com.mindera.pizza.domain.category;
 
+import com.mindera.pizza.utils.DataValidationConstants;
 import lombok.Builder;
 import com.mindera.pizza.domain.DatabaseTimestamps;
 import com.mindera.pizza.utils.Errors;
@@ -8,6 +9,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 
 @Entity
 @EqualsAndHashCode(callSuper = false)
@@ -19,16 +21,13 @@ public class Category extends DatabaseTimestamps{
 
     @Getter @Setter
     @Column(unique = true)
+    @NotBlank(message = DataValidationConstants.INVALID_NAME)
     private String name;
 
     protected Category() {}
 
     @Builder
     public Category(String name) {
-        if (name.isBlank()) {
-            throw new IllegalArgumentException(Errors.INVALID_NAME.toString());
-        }
-
         this.name = name;
     }
 }
