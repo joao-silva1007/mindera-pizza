@@ -17,6 +17,7 @@ import com.mindera.pizza.repositories.order.RestaurantOrderRepo;
 import com.mindera.pizza.repositories.product.ProductRepo;
 import com.mindera.pizza.utils.DateTimeUtils;
 import com.mindera.pizza.utils.Errors;
+import com.mindera.pizza.utils.LoggingMessages;
 import lombok.AllArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -62,7 +63,7 @@ public class RestaurantOrderService {
 
         RestaurantOrder savedRO = restaurantOrderRepo.save(restaurantOrder);
 
-        logger.info("Added a new restaurant order with id {} to the DB", savedRO.getId());
+        logger.info(LoggingMessages.ENTRY_ADDED_TO_DB.toString(), RestaurantOrder.class.getSimpleName(), savedRO.getId());
         return savedRO;
     }
 
@@ -90,13 +91,13 @@ public class RestaurantOrderService {
         }
 
         List<RestaurantOrder> restaurantOrders = restaurantOrderRepo.findAll(spec);
-        logger.info("Fetched {} RestaurantOrders from the DB", restaurantOrders.size());
+        logger.info(LoggingMessages.ENTRIES_FETCHED_FROM_DB.toString(), restaurantOrders.size(), RestaurantOrder.class.getSimpleName());
         return restaurantOrders;
     }
 
     public RestaurantOrder findOrderById(Long orderId) {
         RestaurantOrder restaurantOrder = restaurantOrderRepo.findById(orderId).orElseThrow(() -> new DatabaseEntryNotFoundException(String.format(Errors.ENTRY_BY_ID_NOT_FOUND.toString(), RestaurantOrder.class.getSimpleName())));
-        logger.info("Fetched RestaurantOrder with id {}", orderId);
+        logger.info(LoggingMessages.SINGLE_ENTRY_FETCHED_FROM_DB.toString(), RestaurantOrder.class.getSimpleName(), orderId);
         return restaurantOrder;
     }
 }

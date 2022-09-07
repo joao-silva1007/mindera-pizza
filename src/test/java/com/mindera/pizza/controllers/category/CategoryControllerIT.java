@@ -83,6 +83,7 @@ public class CategoryControllerIT {
     public void findNonExistingCategoryById() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/category/15555"))
                 .andExpect(MockMvcResultMatchers.status().is(400))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.errorMessage").value("Category not found with the specified Id"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorMessage")
+                        .value(String.format(Errors.ENTRY_BY_ID_NOT_FOUND.toString(), Category.class.getSimpleName())));
     }
 }
