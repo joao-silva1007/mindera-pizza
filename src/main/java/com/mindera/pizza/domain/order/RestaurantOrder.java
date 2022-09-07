@@ -1,8 +1,11 @@
 package com.mindera.pizza.domain.order;
 
+import com.mindera.pizza.domain.DatabaseTimestamps;
 import com.mindera.pizza.domain.address.Address;
 import com.mindera.pizza.domain.client.Client;
 import com.mindera.pizza.domain.product.Product;
+import com.mindera.pizza.exceptions.InvalidStatusChangeException;
+import com.mindera.pizza.utils.Errors;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -16,8 +19,8 @@ import java.util.List;
 import java.util.Set;
 
 @Entity
-@EqualsAndHashCode(exclude = "products")
-public class RestaurantOrder {
+@EqualsAndHashCode(exclude = {"products"}, callSuper = false)
+public class RestaurantOrder extends DatabaseTimestamps {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Getter
@@ -52,26 +55,20 @@ public class RestaurantOrder {
     @Getter
     private List<OrderStatusChange> orderStatusChanges;
 
-    @Getter
-    private LocalDateTime createdAt;
-
-    @Getter @Setter
-    private LocalDateTime updatedAt;
-
     protected RestaurantOrder() {}
 
     @Builder
     public RestaurantOrder(LocalDateTime orderDateTime, Address address, Client client) {
         if (orderDateTime.isAfter(LocalDateTime.now())) {
-            throw new IllegalArgumentException("Invalid order date time");
+            throw new IllegalArgumentException(Errors.INVALID_ORDER_DATE_TIME.toString());
         }
 
         if (address == null) {
-            throw new IllegalArgumentException("Invalid address");
+            throw new IllegalArgumentException(Errors.INVALID_ADDRESS.toString());
         }
 
         if (client == null) {
-            throw new IllegalArgumentException("Invalid client");
+            throw new IllegalArgumentException(Errors.INVALID_CLIENT.toString());
         }
         this.orderDateTime = orderDateTime;
         this.totalPrice = 0;
@@ -81,8 +78,6 @@ public class RestaurantOrder {
         this.orderStatusChanges = new LinkedList<>();
         this.orderStatusChanges.add(new OrderStatusChange(OrderStatus.RECEIVED));
         this.currentStatus = OrderStatus.RECEIVED;
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
     }
 
     public boolean addProduct(Product product) {
@@ -92,14 +87,23 @@ public class RestaurantOrder {
     }
 
     public void finishOrder() {
+        if (this.currentStatus != OrderStatus.ACCEPTED) {
+            throw new InvalidStatusChangeException(Errors.ILLEGAL_STATUS_CHANGE, this.currentStatus, OrderStatus.FINISHED);
+        }
         changeStatus(OrderStatus.FINISHED);
     }
 
     public void cancelOrder() {
+        if (!List.of(OrderStatus.RECEIVED, OrderStatus.ACCEPTED).contains(this.currentStatus)) {
+            throw new InvalidStatusChangeException(Errors.ILLEGAL_STATUS_CHANGE, this.currentStatus, OrderStatus.CANCELED);
+        }
         changeStatus(OrderStatus.CANCELED);
     }
 
     public void acceptOrder() {
+        if (this.currentStatus != OrderStatus.RECEIVED) {
+            throw new InvalidStatusChangeException(Errors.ILLEGAL_STATUS_CHANGE, this.currentStatus, OrderStatus.ACCEPTED);
+        }
         changeStatus(OrderStatus.ACCEPTED);
     }
 
