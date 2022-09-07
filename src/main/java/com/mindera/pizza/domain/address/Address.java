@@ -1,17 +1,18 @@
 package com.mindera.pizza.domain.address;
 
+import com.mindera.pizza.domain.DatabaseTimestamps;
 import com.mindera.pizza.domain.client.Client;
+import com.mindera.pizza.utils.Errors;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 import java.util.regex.Pattern;
 
 @Entity
-@EqualsAndHashCode
-public class Address {
+@EqualsAndHashCode(callSuper = false)
+public class Address extends DatabaseTimestamps{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Getter
@@ -39,37 +40,31 @@ public class Address {
     @Getter @Setter
     private Client client;
 
-    @Getter
-    private LocalDateTime createdAt;
-
-    @Getter @Setter
-    private LocalDateTime updatedAt;
-
     protected Address() {}
 
     public Address(String streetName, int streetNumber, String zipCode, String city, String nickname, Client client) {
         if (streetName.isBlank()) {
-            throw new IllegalArgumentException("Invalid street name");
+            throw new IllegalArgumentException(Errors.INVALID_STREET_NAME.toString());
         }
 
         if (streetNumber <= 0) {
-            throw new IllegalArgumentException("Invalid street number");
+            throw new IllegalArgumentException(Errors.INVALID_STREET_NUMBER.toString());
         }
 
         if (!verifyZipCode(zipCode)) {
-            throw new IllegalArgumentException("Invalid zip code");
+            throw new IllegalArgumentException(Errors.INVALID_ZIP_CODE.toString());
         }
 
         if (city.isBlank()) {
-            throw new IllegalArgumentException("Invalid city");
+            throw new IllegalArgumentException(Errors.INVALID_CITY.toString());
         }
 
         if (nickname.isBlank()) {
-            throw new IllegalArgumentException("Invalid nickname");
+            throw new IllegalArgumentException(Errors.INVALID_NICKNAME.toString());
         }
 
         if (client == null) {
-            throw new IllegalArgumentException("Invalid client");
+            throw new IllegalArgumentException(Errors.INVALID_CLIENT.toString());
         }
 
         this.streetName = streetName;
@@ -78,8 +73,6 @@ public class Address {
         this.city = city;
         this.nickname = nickname;
         this.client = client;
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
     }
 
     private boolean verifyZipCode(String zipCode) {
@@ -89,7 +82,7 @@ public class Address {
 
     public void setApartmentInformation(String apartmentInformation) {
         if (apartmentInformation.isBlank()) {
-            throw new IllegalArgumentException("Invalid apartment information");
+            throw new IllegalArgumentException(Errors.INVALID_APARTMENT_INFORMATION.toString());
         }
         this.apartmentInformation = apartmentInformation;
     }

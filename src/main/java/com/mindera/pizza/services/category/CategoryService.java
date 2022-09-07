@@ -2,7 +2,7 @@ package com.mindera.pizza.services.category;
 
 import com.mindera.pizza.domain.category.Category;
 import com.mindera.pizza.dto.category.CreateCategoryDTO;
-import com.mindera.pizza.exceptions.GlobalExceptionHandler;
+import com.mindera.pizza.exceptions.UniqueValueViolationException;
 import com.mindera.pizza.repositories.category.CategoryRepo;
 import lombok.AllArgsConstructor;
 import org.apache.logging.log4j.LogManager;
@@ -28,7 +28,7 @@ public class CategoryService {
         try {
             return categoryRepo.save(category);
         } catch (DataIntegrityViolationException e) {
-            throw new DataIntegrityViolationException("A Category already exists with the inserted name");
+            throw new UniqueValueViolationException(Category.class.getSimpleName(), "name");
         }
     }
 

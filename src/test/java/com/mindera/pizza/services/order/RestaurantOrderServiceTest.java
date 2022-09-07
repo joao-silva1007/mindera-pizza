@@ -3,10 +3,13 @@ package com.mindera.pizza.services.order;
 import com.mindera.pizza.domain.address.Address;
 import com.mindera.pizza.domain.category.Category;
 import com.mindera.pizza.domain.client.Client;
+import com.mindera.pizza.domain.order.OrderStatus;
 import com.mindera.pizza.domain.order.RestaurantOrder;
 import com.mindera.pizza.domain.product.Product;
 import com.mindera.pizza.dto.order.CreateRestaurantOrderDTO;
+import com.mindera.pizza.dto.order.UpdateRestaurantOrderStatusDTO;
 import com.mindera.pizza.exceptions.DatabaseEntryNotFoundException;
+import com.mindera.pizza.exceptions.InvalidStatusChangeException;
 import com.mindera.pizza.repositories.address.AddressRepo;
 import com.mindera.pizza.repositories.client.ClientRepo;
 import com.mindera.pizza.repositories.order.RestaurantOrderRepo;
@@ -24,31 +27,39 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class RestaurantOrderServiceTest {
 
-    ClientRepo clientRepoMock;
-    AddressRepo addressRepoMock;
-    ProductRepo productRepoMock;
-    RestaurantOrderRepo restaurantOrderRepoMock;
+    static ClientRepo clientRepoMock;
+    static AddressRepo addressRepoMock;
+    static ProductRepo productRepoMock;
+    static RestaurantOrderRepo restaurantOrderRepoMock;
+
+    static Client c;
+    static Address a;
+    static Category cat;
+    static Product p;
+
+    static RestaurantOrder sampleRestaurantOrder;
 
     @BeforeEach
-    void beforeAll() {
+    void beforeEach() {
         clientRepoMock = Mockito.mock(ClientRepo.class);
         addressRepoMock = Mockito.mock(AddressRepo.class);
         productRepoMock = Mockito.mock(ProductRepo.class);
         restaurantOrderRepoMock = Mockito.mock(RestaurantOrderRepo.class);
 
-        Client c = new Client("name", "email@gmail.com");
+        c = new Client("name", "email@gmail.com");
         Mockito.when(clientRepoMock.findById(1L)).thenReturn(Optional.of(c));
-        Address a = new Address("street", 10, "1234-123", "city", "house", c);
+        a = new Address("street", 10, "1234-123", "city", "house", c);
         Mockito.when(addressRepoMock.findById(1L)).thenReturn(Optional.of(a));
-        Category cat = new Category("cat1");
-        Product p = new Product("prod", 10, 10, cat);
+        cat = new Category("cat1");
+        p = new Product("prod", 10, 10, cat);
         Mockito.when(productRepoMock.findAllById(List.of(1L))).thenReturn(List.of(p));
+
+        sampleRestaurantOrder = new RestaurantOrder(LocalDateTime.of(2020,10,10,10,10,10),a, c);
+        Mockito.when(restaurantOrderRepoMock.findById(1L)).thenReturn(Optional.of(sampleRestaurantOrder));
     }
 
     @Test
     void createValidOrder() {
-        Client c = new Client("name", "email@gmail.com");
-        Address a = new Address("street", 10, "1234-123", "city", "house", c);
         RestaurantOrderService service = new RestaurantOrderService(restaurantOrderRepoMock, addressRepoMock, clientRepoMock, productRepoMock);
         RestaurantOrder expectedRo = new RestaurantOrder(LocalDateTime.of(2021,10,10,10,10,10),a, c);
         Mockito.when(restaurantOrderRepoMock.save(Mockito.any(RestaurantOrder.class))).thenReturn(expectedRo);
@@ -89,8 +100,6 @@ class RestaurantOrderServiceTest {
 
     @Test
     void getOrdersNoFilters() {
-        Client c = new Client("name", "email@gmail.com");
-        Address a = new Address("street", 10, "1234-123", "city", "house", c);
         RestaurantOrder ro1 = new RestaurantOrder(LocalDateTime.of(2021,10,10,10,10,10),a, c);
         RestaurantOrder ro2 = new RestaurantOrder(LocalDateTime.of(2021,10,15,10,10,10),a, c);
         RestaurantOrder ro3 = new RestaurantOrder(LocalDateTime.of(2021,10,20,10,10,10),a, c);
@@ -109,17 +118,12 @@ class RestaurantOrderServiceTest {
 
     @Test
     void findExistingOrderById() {
-        Client c = new Client("name", "email@gmail.com");
-        Address a = new Address("street", 10, "1234-123", "city", "house", c);
-        RestaurantOrder expectedRo = new RestaurantOrder(LocalDateTime.of(2021,10,10,10,10,10),a, c);
+        RestaurantOrder expectedRo = new RestaurantOrder(LocalDateTime.of(2020,10,10,10,10,10),a, c);
 
-        RestaurantOrderRepo newRestaurantOrderRepoMock = Mockito.mock(RestaurantOrderRepo.class);
-
-        Mockito.when(newRestaurantOrderRepoMock.findById(1L)).thenReturn(Optional.of(expectedRo));
-        RestaurantOrderService service = new RestaurantOrderService(newRestaurantOrderRepoMock, addressRepoMock, clientRepoMock, productRepoMock);
+        RestaurantOrderService service = new RestaurantOrderService(restaurantOrderRepoMock, addressRepoMock, clientRepoMock, productRepoMock);
 
         RestaurantOrder ro = service.findOrderById(1L);
-        Mockito.verify(newRestaurantOrderRepoMock, Mockito.times(1)).findById(1L);
+        Mockito.verify(restaurantOrderRepoMock, Mockito.times(1)).findById(1L);
         assertEquals(expectedRo, ro);
     }
 
@@ -131,5 +135,72 @@ class RestaurantOrderServiceTest {
         RestaurantOrderService service = new RestaurantOrderService(newRestaurantOrderRepoMock, addressRepoMock, clientRepoMock, productRepoMock);
 
         assertThrows(DatabaseEntryNotFoundException.class, () -> service.findOrderById(1L));
+    }
+
+    @Test
+    void updateOrderStatusToCanceled() {
+        RestaurantOrder actual = new RestaurantOrder(LocalDateTime.of(2020,10,10,10,10,10),a, c);
+        actual.cancelOrder();
+
+        Mockito.when(restaurantOrderRepoMock.save(Mockito.any(RestaurantOrder.class))).thenReturn(actual);
+        RestaurantOrderService service = new RestaurantOrderService(restaurantOrderRepoMock, addressRepoMock, clientRepoMock, productRepoMock);
+        assertEquals(sampleRestaurantOrder, service.updateOrderStatus(1L, new UpdateRestaurantOrderStatusDTO(OrderStatus.CANCELED)));
+    }
+
+    @Test
+    void updateOrderStatusToFinished() {
+        RestaurantOrder actualRo = new RestaurantOrder(LocalDateTime.of(2020,10,10,10,10,10),a, c);
+        actualRo.acceptOrder();
+        actualRo.finishOrder();
+
+        sampleRestaurantOrder.acceptOrder();
+
+        Mockito.when(restaurantOrderRepoMock.save(Mockito.any(RestaurantOrder.class))).thenReturn(actualRo);
+        RestaurantOrderService service = new RestaurantOrderService(restaurantOrderRepoMock, addressRepoMock, clientRepoMock, productRepoMock);
+
+        assertEquals(sampleRestaurantOrder, service.updateOrderStatus(1L, new UpdateRestaurantOrderStatusDTO(OrderStatus.FINISHED)));
+    }
+
+    @Test
+    void updateOrderStatusToAccepted() {
+        RestaurantOrder actual = new RestaurantOrder(LocalDateTime.of(2020,10,10,10,10,10),a, c);
+        actual.acceptOrder();
+
+        Mockito.when(restaurantOrderRepoMock.save(Mockito.any(RestaurantOrder.class))).thenReturn(actual);
+        RestaurantOrderService service = new RestaurantOrderService(restaurantOrderRepoMock, addressRepoMock, clientRepoMock, productRepoMock);
+
+        assertEquals(sampleRestaurantOrder, service.updateOrderStatus(1L, new UpdateRestaurantOrderStatusDTO(OrderStatus.ACCEPTED)));
+    }
+
+    @Test
+    void updateOrderStatusToReceived() {
+        RestaurantOrderService service = new RestaurantOrderService(restaurantOrderRepoMock, addressRepoMock, clientRepoMock, productRepoMock);
+
+        assertThrows(IllegalArgumentException.class, () -> service.updateOrderStatus(1L, new UpdateRestaurantOrderStatusDTO(OrderStatus.RECEIVED)));
+    }
+
+    @Test
+    void updateOrderStatusFromReceivedToFinished() {
+        RestaurantOrderService service = new RestaurantOrderService(restaurantOrderRepoMock, addressRepoMock, clientRepoMock, productRepoMock);
+
+        assertThrows(InvalidStatusChangeException.class, () -> service.updateOrderStatus(1L, new UpdateRestaurantOrderStatusDTO(OrderStatus.FINISHED)));
+    }
+
+    @Test
+    void updateOrderStatusFromFinishedToCanceled() {
+        sampleRestaurantOrder.acceptOrder();
+        sampleRestaurantOrder.finishOrder();
+        RestaurantOrderService service = new RestaurantOrderService(restaurantOrderRepoMock, addressRepoMock, clientRepoMock, productRepoMock);
+
+        assertThrows(InvalidStatusChangeException.class, () -> service.updateOrderStatus(1L, new UpdateRestaurantOrderStatusDTO(OrderStatus.CANCELED)));
+    }
+
+    @Test
+    void updateOrderStatusFromFinishedToAccepted() {
+        sampleRestaurantOrder.acceptOrder();
+        sampleRestaurantOrder.finishOrder();
+        RestaurantOrderService service = new RestaurantOrderService(restaurantOrderRepoMock, addressRepoMock, clientRepoMock, productRepoMock);
+
+        assertThrows(InvalidStatusChangeException.class, () -> service.updateOrderStatus(1L, new UpdateRestaurantOrderStatusDTO(OrderStatus.ACCEPTED)));
     }
 }
