@@ -4,12 +4,14 @@ import com.mindera.pizza.domain.category.Category;
 import com.mindera.pizza.dto.category.CreateCategoryDTO;
 import com.mindera.pizza.exceptions.DatabaseEntryNotFoundException;
 import com.mindera.pizza.exceptions.UniqueValueViolationException;
+import com.mindera.pizza.mappers.category.CategoryMapper;
 import com.mindera.pizza.repositories.category.CategoryRepo;
 import com.mindera.pizza.utils.Errors;
 import com.mindera.pizza.utils.LoggingMessages;
 import lombok.AllArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
@@ -24,9 +26,7 @@ public class CategoryService {
     private final CategoryRepo categoryRepo;
 
     public Category createCategory(CreateCategoryDTO categoryDTO) {
-        Category category = Category.builder()
-                .name(categoryDTO.name())
-                .build();
+        Category category = CategoryMapper.convertToDomain(categoryDTO);
 
         try {
             Category savedCat = categoryRepo.save(category);

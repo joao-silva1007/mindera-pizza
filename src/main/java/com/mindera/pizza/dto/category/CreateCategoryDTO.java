@@ -1,7 +1,14 @@
 package com.mindera.pizza.dto.category;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-public record CreateCategoryDTO(String name) {
-    @Builder public CreateCategoryDTO {}
+@Getter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class CreateCategoryDTO {
+    String name;
 }

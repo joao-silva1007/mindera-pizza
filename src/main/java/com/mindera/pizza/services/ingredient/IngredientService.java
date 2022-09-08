@@ -4,6 +4,7 @@ import com.mindera.pizza.domain.ingredient.Ingredient;
 import com.mindera.pizza.dto.ingredient.CreateIngredientDTO;
 import com.mindera.pizza.exceptions.DatabaseEntryNotFoundException;
 import com.mindera.pizza.exceptions.UniqueValueViolationException;
+import com.mindera.pizza.mappers.ingredient.IngredientMapper;
 import com.mindera.pizza.repositories.ingredient.IngredientRepo;
 import com.mindera.pizza.utils.Errors;
 import com.mindera.pizza.utils.LoggingMessages;
@@ -24,10 +25,7 @@ public class IngredientService {
     private final IngredientRepo ingredientRepo;
 
     public Ingredient createIngredient(CreateIngredientDTO ingredientDTO) {
-        Ingredient ingredient = Ingredient.builder()
-                .name(ingredientDTO.name())
-                .stock(ingredientDTO.stock())
-                .build();
+        Ingredient ingredient = IngredientMapper.convertToDomain(ingredientDTO);
 
         try {
             Ingredient savedIngredient = ingredientRepo.save(ingredient);
