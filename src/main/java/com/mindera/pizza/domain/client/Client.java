@@ -20,7 +20,7 @@ public class Client extends DatabaseTimestamps{
     private Long id;
 
     @Getter @Setter
-    @Pattern(regexp = "[0-9]{9}", message = DataValidationConstants.INVALID_VAT_NUMBER)
+    @Pattern(regexp = "[a-zA-Z0-9]*", message = DataValidationConstants.INVALID_VAT_NUMBER)
     private String vatNumber;
 
     @Getter @Setter

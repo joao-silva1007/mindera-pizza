@@ -51,15 +51,6 @@ class ClientTest {
     }
 
     @Test
-    void invalidVatNumber() {
-        val c = Client.builder().name("name1").email("email1@gmail.com").build();
-        c.setVatNumber("1256789");
-        int validationErrorAmount = validator.validate(c).size();
-        int expectedErrorAmount = 1;
-        assertEquals(expectedErrorAmount, validationErrorAmount);
-    }
-
-    @Test
     void invalidName() {
         val c = Client.builder().name("   ").email("email1@gmail.com").build();
         int validationErrorAmount = validator.validate(c).size();
