@@ -60,16 +60,16 @@ public class RestaurantOrderControllerTestIT {
         c2 = clientRepo.findById(2L).orElseThrow();
         p = productRepo.findById(1L).orElseThrow();
 
-        ro1 = new RestaurantOrder(LocalDateTime.of(2022,4,10,10,10,10), a1, c1);
+        ro1 = RestaurantOrder.builder().orderDateTime(LocalDateTime.of(2022,4,10,10,10,10)).address(a1).client(c1).build();
         ro1.addProduct(p);
         ro1 = restaurantOrderRepo.save(ro1);
 
-        ro2 = new RestaurantOrder(LocalDateTime.of(2022,3,10,10,10,10), a2, c2);
+        ro2 = RestaurantOrder.builder().orderDateTime(LocalDateTime.of(2022,3,10,10,10,10)).address(a2).client(c2).build();
         ro2.cancelOrder();
         ro2.addProduct(p);
         ro2 = restaurantOrderRepo.save(ro2);
 
-        ro3 = new RestaurantOrder(LocalDateTime.of(2022,2,10,10,10,10), a2, c2);
+        ro3 = RestaurantOrder.builder().orderDateTime(LocalDateTime.of(2022,2,10,10,10,10)).address(a2).client(c2).build();
         ro3.addProduct(p);
         ro3 = restaurantOrderRepo.save(ro3);
     }
@@ -80,7 +80,13 @@ public class RestaurantOrderControllerTestIT {
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/order")
                     .accept(MediaType.APPLICATION_JSON)
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(mapper.writeValueAsString(new CreateRestaurantOrderDTO("2022-04-10 10:10:10", List.of(1L), 1L, 1L))))
+                    .content(mapper.writeValueAsString(CreateRestaurantOrderDTO
+                            .builder()
+                            .orderDateTime("2022-04-10 10:10:10")
+                            .productIds(List.of(1L))
+                            .addressId(1L)
+                            .clientId(1L)
+                            .build())))
             .andExpect(MockMvcResultMatchers.status().is(201))
             .andReturn();
         int id = JsonPath.parse(result.getResponse().getContentAsString()).read("$.id");
@@ -93,7 +99,13 @@ public class RestaurantOrderControllerTestIT {
         mockMvc.perform(MockMvcRequestBuilders.post("/order")
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(new CreateRestaurantOrderDTO("2022-04-10 10:10:10", List.of(1L), 1L, 10L))))
+                        .content(mapper.writeValueAsString(CreateRestaurantOrderDTO
+                                .builder()
+                                .orderDateTime("2022-04-10 10:10:10")
+                                .productIds(List.of(1L))
+                                .addressId(1L)
+                                .clientId(10L)
+                                .build())))
                 .andExpect(MockMvcResultMatchers.status().is(400))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorMessage").value(String.format(Errors.ENTRY_NOT_FOUND.toString(), Client.class.getSimpleName())));
     }
@@ -104,7 +116,13 @@ public class RestaurantOrderControllerTestIT {
         mockMvc.perform(MockMvcRequestBuilders.post("/order")
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(new CreateRestaurantOrderDTO("2022-04-10 10:10:10", List.of(2L), 1L, 1L))))
+                        .content(mapper.writeValueAsString(CreateRestaurantOrderDTO
+                                .builder()
+                                .orderDateTime("2022-04-10 10:10:10")
+                                .productIds(List.of(2L))
+                                .addressId(1L)
+                                .clientId(1L)
+                                .build())))
                 .andExpect(MockMvcResultMatchers.status().is(400))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorMessage").value(String.format(Errors.ENTRY_NOT_FOUND.toString(), Product.class.getSimpleName())));
     }
@@ -115,7 +133,13 @@ public class RestaurantOrderControllerTestIT {
         mockMvc.perform(MockMvcRequestBuilders.post("/order")
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(new CreateRestaurantOrderDTO("2022-04-10 10:10:10", List.of(1L), 10L, 1L))))
+                        .content(mapper.writeValueAsString(CreateRestaurantOrderDTO
+                                .builder()
+                                .orderDateTime("2022-04-10 10:10:10")
+                                .productIds(List.of(1L))
+                                .addressId(10L)
+                                .clientId(1L)
+                                .build())))
                 .andExpect(MockMvcResultMatchers.status().is(400))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorMessage").value(String.format(Errors.ENTRY_NOT_FOUND.toString(), Address.class.getSimpleName())));
     }
@@ -126,7 +150,13 @@ public class RestaurantOrderControllerTestIT {
         mockMvc.perform(MockMvcRequestBuilders.post("/order")
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(new CreateRestaurantOrderDTO("2023-04-10 10:10:10", List.of(1L), 1L, 1L))))
+                        .content(mapper.writeValueAsString(CreateRestaurantOrderDTO
+                                .builder()
+                                .orderDateTime("2023-04-10 10:10:10")
+                                .productIds(List.of(1L))
+                                .addressId(1L)
+                                .clientId(1L)
+                                .build())))
                 .andExpect(MockMvcResultMatchers.status().is(400))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorMessage").value(Errors.INVALID_ORDER_DATE_TIME.toString()));
     }
@@ -215,19 +245,25 @@ public class RestaurantOrderControllerTestIT {
 
     @Test
     public void changeOrderStatus() throws Exception {
-        val ro4 = new RestaurantOrder(LocalDateTime.of(2022,1,10,10,10,10), a1, c1);
+        val ro4 = RestaurantOrder.builder().orderDateTime(LocalDateTime.of(2022,1,10,10,10,10)).address(a1).client(c1).build();
         val savedRO4 = restaurantOrderRepo.save(ro4);
         ObjectMapper mapper = new ObjectMapper();
 
         mockMvc.perform(MockMvcRequestBuilders.patch("/order/" + savedRO4.getId() + "/status")
-                        .content(mapper.writeValueAsString(new UpdateRestaurantOrderStatusDTO(OrderStatus.ACCEPTED)))
+                        .content(mapper.writeValueAsString(UpdateRestaurantOrderStatusDTO
+                                .builder()
+                                .newStatus(OrderStatus.ACCEPTED)
+                                .build()))
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().is(200))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.currentStatus").value("ACCEPTED"));
 
         mockMvc.perform(MockMvcRequestBuilders.patch("/order/" + savedRO4.getId() + "/status")
-                        .content(mapper.writeValueAsString(new UpdateRestaurantOrderStatusDTO(OrderStatus.FINISHED)))
+                        .content(mapper.writeValueAsString(UpdateRestaurantOrderStatusDTO
+                                .builder()
+                                .newStatus(OrderStatus.FINISHED)
+                                .build()))
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().is(200))
@@ -237,12 +273,15 @@ public class RestaurantOrderControllerTestIT {
 
     @Test
     public void changeOrderStatusToCanceled() throws Exception {
-        val ro4 = new RestaurantOrder(LocalDateTime.of(2022,1,10,10,10,10), a1, c1);
+        val ro4 = RestaurantOrder.builder().orderDateTime(LocalDateTime.of(2022,1,10,10,10,10)).address(a1).client(c1).build();
         val savedRO4 = restaurantOrderRepo.save(ro4);
         ObjectMapper mapper = new ObjectMapper();
 
         mockMvc.perform(MockMvcRequestBuilders.patch("/order/" + savedRO4.getId() + "/status")
-                        .content(mapper.writeValueAsString(new UpdateRestaurantOrderStatusDTO(OrderStatus.CANCELED)))
+                        .content(mapper.writeValueAsString(UpdateRestaurantOrderStatusDTO
+                                .builder()
+                                .newStatus(OrderStatus.CANCELED)
+                                .build()))
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().is(200))
@@ -254,7 +293,10 @@ public class RestaurantOrderControllerTestIT {
     void changeToInvalidOrderStatus() throws Exception {
         ObjectMapper mapper = new ObjectMapper();
         mockMvc.perform(MockMvcRequestBuilders.patch("/order/1/status")
-                        .content(mapper.writeValueAsString(new UpdateRestaurantOrderStatusDTO(OrderStatus.RECEIVED)))
+                        .content(mapper.writeValueAsString(UpdateRestaurantOrderStatusDTO
+                                .builder()
+                                .newStatus(OrderStatus.RECEIVED)
+                                .build()))
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().is(400))

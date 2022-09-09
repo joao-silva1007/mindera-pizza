@@ -10,14 +10,14 @@ import java.util.Map;
 @Builder
 public class ExceptionBody {
     private LocalDateTime timestamp;
-    private Exception exception;
+    private Object exception;
     private HttpStatus statusCode;
 
-    public Map<String, String> toMap() {
-        Map<String, String> map = new HashMap<>();
+    public Map<String, Object> toMap() {
+        Map<String, Object> map = new HashMap<>();
         map.put("timestamp",this.timestamp.toString());
         map.put("status", statusCode.toString());
-        map.put("errorMessage", exception.getMessage());
+        map.put("errorMessage", exception);
         return map;
     }
 }
