@@ -14,6 +14,7 @@ import com.mindera.pizza.repositories.address.AddressRepo;
 import com.mindera.pizza.repositories.client.ClientRepo;
 import com.mindera.pizza.repositories.order.RestaurantOrderRepo;
 import com.mindera.pizza.repositories.product.ProductRepo;
+import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -46,22 +47,32 @@ class RestaurantOrderServiceTest {
         productRepoMock = Mockito.mock(ProductRepo.class);
         restaurantOrderRepoMock = Mockito.mock(RestaurantOrderRepo.class);
 
-        c = new Client("name", "email@gmail.com");
+        c = Client.builder().name("name").email("email@gmail.com").build();
         Mockito.when(clientRepoMock.findById(1L)).thenReturn(Optional.of(c));
-        a = new Address("street", 10, "1234-123", "city", "house", c);
+        a = Address.builder().streetName("street").streetNumber(10).zipCode("1234-123").city("city").nickname("house").client(c).build();
         Mockito.when(addressRepoMock.findById(1L)).thenReturn(Optional.of(a));
         cat = new Category("cat1");
-        p = new Product("prod", 10, 10, cat);
+        p = Product.builder().name("prod").stock(10).price(10).category(cat).build();
         Mockito.when(productRepoMock.findAllById(List.of(1L))).thenReturn(List.of(p));
 
-        sampleRestaurantOrder = new RestaurantOrder(LocalDateTime.of(2020,10,10,10,10,10),a, c);
+        sampleRestaurantOrder = RestaurantOrder
+                .builder()
+                .orderDateTime(LocalDateTime.of(2020,10,10,10,10,10))
+                .address(a)
+                .client(c)
+                .build();
         Mockito.when(restaurantOrderRepoMock.findById(1L)).thenReturn(Optional.of(sampleRestaurantOrder));
     }
 
     @Test
     void createValidOrder() {
         RestaurantOrderService service = new RestaurantOrderService(restaurantOrderRepoMock, addressRepoMock, clientRepoMock, productRepoMock);
-        RestaurantOrder expectedRo = new RestaurantOrder(LocalDateTime.of(2021,10,10,10,10,10),a, c);
+        RestaurantOrder expectedRo = RestaurantOrder
+                .builder()
+                .orderDateTime(LocalDateTime.of(2021,10,10,10,10,10))
+                .address(a)
+                .client(c)
+                .build();
         Mockito.when(restaurantOrderRepoMock.save(Mockito.any(RestaurantOrder.class))).thenReturn(expectedRo);
         RestaurantOrder ro = service.createOrder(new CreateRestaurantOrderDTO("2021-10-10 10:10:10", List.of(1L), 1L, 1L));
         Mockito.verify(restaurantOrderRepoMock, Mockito.times(1)).save(Mockito.any());
@@ -100,9 +111,24 @@ class RestaurantOrderServiceTest {
 
     @Test
     void getOrdersNoFilters() {
-        RestaurantOrder ro1 = new RestaurantOrder(LocalDateTime.of(2021,10,10,10,10,10),a, c);
-        RestaurantOrder ro2 = new RestaurantOrder(LocalDateTime.of(2021,10,15,10,10,10),a, c);
-        RestaurantOrder ro3 = new RestaurantOrder(LocalDateTime.of(2021,10,20,10,10,10),a, c);
+        val ro1 = RestaurantOrder
+                .builder()
+                .orderDateTime(LocalDateTime.of(2021,10,10,10,10,10))
+                .address(a)
+                .client(c)
+                .build();
+        val ro2 = RestaurantOrder
+                .builder()
+                .orderDateTime(LocalDateTime.of(2021,10,15,10,10,10))
+                .address(a)
+                .client(c)
+                .build();
+        val ro3 = RestaurantOrder
+                .builder()
+                .orderDateTime(LocalDateTime.of(2021,10,20,10,10,10))
+                .address(a)
+                .client(c)
+                .build();
         List<RestaurantOrder> expectedResult = List.of(ro1, ro2, ro3);
 
         RestaurantOrderRepo newRestaurantOrderRepoMock = Mockito.mock(RestaurantOrderRepo.class);
@@ -118,7 +144,12 @@ class RestaurantOrderServiceTest {
 
     @Test
     void findExistingOrderById() {
-        RestaurantOrder expectedRo = new RestaurantOrder(LocalDateTime.of(2020,10,10,10,10,10),a, c);
+        val expectedRo = RestaurantOrder
+                .builder()
+                .orderDateTime(LocalDateTime.of(2020,10,10,10,10,10))
+                .address(a)
+                .client(c)
+                .build();
 
         RestaurantOrderService service = new RestaurantOrderService(restaurantOrderRepoMock, addressRepoMock, clientRepoMock, productRepoMock);
 
@@ -139,7 +170,12 @@ class RestaurantOrderServiceTest {
 
     @Test
     void updateOrderStatusToCanceled() {
-        RestaurantOrder actual = new RestaurantOrder(LocalDateTime.of(2020,10,10,10,10,10),a, c);
+        val actual = RestaurantOrder
+                .builder()
+                .orderDateTime(LocalDateTime.of(2020,10,10,10,10,10))
+                .address(a)
+                .client(c)
+                .build();
         actual.cancelOrder();
 
         Mockito.when(restaurantOrderRepoMock.save(Mockito.any(RestaurantOrder.class))).thenReturn(actual);
@@ -149,7 +185,12 @@ class RestaurantOrderServiceTest {
 
     @Test
     void updateOrderStatusToFinished() {
-        RestaurantOrder actualRo = new RestaurantOrder(LocalDateTime.of(2020,10,10,10,10,10),a, c);
+        val actualRo = RestaurantOrder
+                .builder()
+                .orderDateTime(LocalDateTime.of(2020,10,10,10,10,10))
+                .address(a)
+                .client(c)
+                .build();
         actualRo.acceptOrder();
         actualRo.finishOrder();
 
@@ -163,7 +204,12 @@ class RestaurantOrderServiceTest {
 
     @Test
     void updateOrderStatusToAccepted() {
-        RestaurantOrder actual = new RestaurantOrder(LocalDateTime.of(2020,10,10,10,10,10),a, c);
+        val actual = RestaurantOrder
+                .builder()
+                .orderDateTime(LocalDateTime.of(2020,10,10,10,10,10))
+                .address(a)
+                .client(c)
+                .build();
         actual.acceptOrder();
 
         Mockito.when(restaurantOrderRepoMock.save(Mockito.any(RestaurantOrder.class))).thenReturn(actual);

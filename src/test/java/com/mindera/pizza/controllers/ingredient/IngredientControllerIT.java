@@ -36,8 +36,8 @@ public class IngredientControllerIT {
 
     @BeforeAll
     static void beforeAll(@Autowired IngredientRepo ingredientRepo) {
-        val ing = new Ingredient("Cheese", 25);
-        val ing2 = new Ingredient("Bacon", 50);
+        val ing = Ingredient.builder().name("Cheese").stock(25).build();
+        val ing2 = Ingredient.builder().name("Bacon").stock(50).build();
         ingredientRepo.saveAll(List.of(ing, ing2));
     }
 
@@ -80,7 +80,7 @@ public class IngredientControllerIT {
 
     @Test
     public void addIngredientWithExistingName() throws Exception {
-        val ing = new Ingredient("Ham", 30);
+        val ing = Ingredient.builder().name("Ham").stock(30).build();
         Long id = ingredientRepo.save(ing).getId();
         ObjectMapper mapper = new ObjectMapper();
         mockMvc.perform(MockMvcRequestBuilders.post("/ingredient")

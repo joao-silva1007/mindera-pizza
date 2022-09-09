@@ -7,10 +7,7 @@ import com.mindera.pizza.domain.product.Product;
 import com.mindera.pizza.exceptions.InvalidStatusChangeException;
 import com.mindera.pizza.utils.DataValidationConstants;
 import com.mindera.pizza.utils.Errors;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.Min;
@@ -24,6 +21,8 @@ import java.util.Set;
 
 @Entity
 @EqualsAndHashCode(exclude = {"products"}, callSuper = false)
+@Builder
+@AllArgsConstructor
 public class RestaurantOrder extends DatabaseTimestamps {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,7 +34,8 @@ public class RestaurantOrder extends DatabaseTimestamps {
     private LocalDateTime orderDateTime;
 
     @Getter
-    private float totalPrice;
+    @Builder.Default
+    private float totalPrice = 0;
 
     @ManyToOne
     @Getter @Setter
@@ -53,28 +53,19 @@ public class RestaurantOrder extends DatabaseTimestamps {
             inverseJoinColumns = @JoinColumn(name = "product_id", referencedColumnName = "id")
     )
     @Getter
-    private Set<Product> products;
+    @Builder.Default
+    private Set<Product> products = new HashSet<>();
 
     @Getter
-    private OrderStatus currentStatus;
+    @Builder.Default
+    private OrderStatus currentStatus = OrderStatus.RECEIVED;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Getter
-    private List<OrderStatusChange> orderStatusChanges;
+    @Builder.Default
+    private List<OrderStatusChange> orderStatusChanges = new LinkedList<>(List.of(new OrderStatusChange(OrderStatus.RECEIVED)));
 
     protected RestaurantOrder() {}
-
-    @Builder
-    public RestaurantOrder(LocalDateTime orderDateTime, Address address, Client client) {
-        this.orderDateTime = orderDateTime;
-        this.totalPrice = 0;
-        this.address = address;
-        this.client = client;
-        this.products = new HashSet<>();
-        this.orderStatusChanges = new LinkedList<>();
-        this.orderStatusChanges.add(new OrderStatusChange(OrderStatus.RECEIVED));
-        this.currentStatus = OrderStatus.RECEIVED;
-    }
 
     public boolean addProduct(Product product) {
         if (product == null) return false;

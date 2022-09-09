@@ -60,16 +60,16 @@ public class RestaurantOrderControllerTestIT {
         c2 = clientRepo.findById(2L).orElseThrow();
         p = productRepo.findById(1L).orElseThrow();
 
-        ro1 = new RestaurantOrder(LocalDateTime.of(2022,4,10,10,10,10), a1, c1);
+        ro1 = RestaurantOrder.builder().orderDateTime(LocalDateTime.of(2022,4,10,10,10,10)).address(a1).client(c1).build();
         ro1.addProduct(p);
         ro1 = restaurantOrderRepo.save(ro1);
 
-        ro2 = new RestaurantOrder(LocalDateTime.of(2022,3,10,10,10,10), a2, c2);
+        ro2 = RestaurantOrder.builder().orderDateTime(LocalDateTime.of(2022,3,10,10,10,10)).address(a2).client(c2).build();
         ro2.cancelOrder();
         ro2.addProduct(p);
         ro2 = restaurantOrderRepo.save(ro2);
 
-        ro3 = new RestaurantOrder(LocalDateTime.of(2022,2,10,10,10,10), a2, c2);
+        ro3 = RestaurantOrder.builder().orderDateTime(LocalDateTime.of(2022,2,10,10,10,10)).address(a2).client(c2).build();
         ro3.addProduct(p);
         ro3 = restaurantOrderRepo.save(ro3);
     }
@@ -245,7 +245,7 @@ public class RestaurantOrderControllerTestIT {
 
     @Test
     public void changeOrderStatus() throws Exception {
-        val ro4 = new RestaurantOrder(LocalDateTime.of(2022,1,10,10,10,10), a1, c1);
+        val ro4 = RestaurantOrder.builder().orderDateTime(LocalDateTime.of(2022,1,10,10,10,10)).address(a1).client(c1).build();
         val savedRO4 = restaurantOrderRepo.save(ro4);
         ObjectMapper mapper = new ObjectMapper();
 
@@ -273,7 +273,7 @@ public class RestaurantOrderControllerTestIT {
 
     @Test
     public void changeOrderStatusToCanceled() throws Exception {
-        val ro4 = new RestaurantOrder(LocalDateTime.of(2022,1,10,10,10,10), a1, c1);
+        val ro4 = RestaurantOrder.builder().orderDateTime(LocalDateTime.of(2022,1,10,10,10,10)).address(a1).client(c1).build();
         val savedRO4 = restaurantOrderRepo.save(ro4);
         ObjectMapper mapper = new ObjectMapper();
 

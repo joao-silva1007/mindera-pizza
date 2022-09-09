@@ -23,10 +23,10 @@ class RestaurantOrderTest {
 
     @BeforeAll
     static void beforeAll() {
-        c = new Client("name1", "email1@gmail.com");
-        a = new Address("street name", 25, "1243-123", "city", "house", c);
+        c = Client.builder().name("name1").email("email1@gmail.com").build();
+        a = Address.builder().streetName("street name").streetNumber(25).zipCode("1234-123").city("city").nickname("house").client(c).build();
         Category cat = new Category("name");
-        p = new Product("product1", 10.2f, 5, cat);
+        p = Product.builder().name("product1").stock(5).price(10.2f).category(cat).build();
 
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
@@ -34,7 +34,7 @@ class RestaurantOrderTest {
 
     @Test
     public void validRestaurantOrder() {
-        RestaurantOrder ro = new RestaurantOrder(LocalDateTime.now(), a, c);
+        val ro = RestaurantOrder.builder().orderDateTime(LocalDateTime.now()).address(a).client(c).build();
 
         int validationErrorAmount = validator.validate(ro).size();
         int expectedErrorAmount = 0;
@@ -50,7 +50,7 @@ class RestaurantOrderTest {
 
     @Test
     public void invalidOrderDateTime() {
-        val ro = new RestaurantOrder(LocalDateTime.now().plusDays(4), a, c);
+        val ro = RestaurantOrder.builder().orderDateTime(LocalDateTime.now().plusDays(4)).address(a).client(c).build();
         int validationErrorAmount = validator.validate(ro).size();
         int expectedErrorAmount = 1;
         assertEquals(expectedErrorAmount, validationErrorAmount);
@@ -58,7 +58,7 @@ class RestaurantOrderTest {
 
     @Test
     public void invalidAddress() {
-        val ro = new RestaurantOrder(LocalDateTime.now(), null, c);
+        val ro = RestaurantOrder.builder().orderDateTime(LocalDateTime.now()).address(null).client(c).build();
         int validationErrorAmount = validator.validate(ro).size();
         int expectedErrorAmount = 1;
         assertEquals(expectedErrorAmount, validationErrorAmount);
@@ -66,7 +66,7 @@ class RestaurantOrderTest {
 
     @Test
     public void invalidClient() {
-        val ro = new RestaurantOrder(LocalDateTime.now(), a, null);
+        val ro = RestaurantOrder.builder().orderDateTime(LocalDateTime.now()).address(a).client(null).build();
         int validationErrorAmount = validator.validate(ro).size();
         int expectedErrorAmount = 1;
         assertEquals(expectedErrorAmount, validationErrorAmount);
@@ -74,13 +74,13 @@ class RestaurantOrderTest {
 
     @Test
     public void nullProduct() {
-        RestaurantOrder ro = new RestaurantOrder(LocalDateTime.now(), a, c);
+        val ro = RestaurantOrder.builder().orderDateTime(LocalDateTime.now()).address(a).client(c).build();
         assertFalse(ro.addProduct(null));
     }
 
     @Test
     public void productThatAlreadyExists() {
-        RestaurantOrder ro = new RestaurantOrder(LocalDateTime.now(), a, c);
+        val ro = RestaurantOrder.builder().orderDateTime(LocalDateTime.now()).address(a).client(c).build();
         ro.addProduct(p);
 
         assertFalse(ro.addProduct(p));
@@ -88,7 +88,7 @@ class RestaurantOrderTest {
 
     @Test
     public void finishOrder() {
-        RestaurantOrder ro = new RestaurantOrder(LocalDateTime.now(), a, c);
+        val ro = RestaurantOrder.builder().orderDateTime(LocalDateTime.now()).address(a).client(c).build();
         ro.acceptOrder();
         ro.finishOrder();
 
@@ -97,7 +97,7 @@ class RestaurantOrderTest {
 
     @Test
     public void cancelOrder() {
-        RestaurantOrder ro = new RestaurantOrder(LocalDateTime.now(), a, c);
+        val ro = RestaurantOrder.builder().orderDateTime(LocalDateTime.now()).address(a).client(c).build();
         ro.cancelOrder();
 
         assertEquals(OrderStatus.CANCELED, ro.getCurrentStatus());
@@ -105,7 +105,7 @@ class RestaurantOrderTest {
 
     @Test
     public void acceptOrder() {
-        RestaurantOrder ro = new RestaurantOrder(LocalDateTime.now(), a, c);
+        val ro = RestaurantOrder.builder().orderDateTime(LocalDateTime.now()).address(a).client(c).build();
         ro.acceptOrder();
 
         assertEquals(OrderStatus.ACCEPTED, ro.getCurrentStatus());

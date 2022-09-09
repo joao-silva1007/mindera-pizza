@@ -22,7 +22,7 @@ class ClientTest {
 
     @Test
     void validClient() {
-        Client c = new Client("name1", "email1@gmail.com");
+        val c = Client.builder().name("name1").email("email1@gmail.com").build();
         String expectedName = "name1";
         String expectedEmail = "email1@gmail.com";
         String expectedPhoneNumber = "912345678";
@@ -43,7 +43,7 @@ class ClientTest {
 
     @Test
     void invalidPhoneNumber() {
-        Client c = new Client("name1", "email1@gmail.com");
+        val c = Client.builder().name("name1").email("email1@gmail.com").build();
         c.setPhoneNumber("758495935");
         int validationErrorAmount = validator.validate(c).size();
         int expectedErrorAmount = 1;
@@ -52,7 +52,7 @@ class ClientTest {
 
     @Test
     void invalidVatNumber() {
-        Client c = new Client("name1", "email1@gmail.com");
+        val c = Client.builder().name("name1").email("email1@gmail.com").build();
         c.setVatNumber("1256789");
         int validationErrorAmount = validator.validate(c).size();
         int expectedErrorAmount = 1;
@@ -61,7 +61,7 @@ class ClientTest {
 
     @Test
     void invalidName() {
-        val c = new Client("   ", "email1@gmail.com");
+        val c = Client.builder().name("   ").email("email1@gmail.com").build();
         int validationErrorAmount = validator.validate(c).size();
         int expectedErrorAmount = 1;
         assertEquals(expectedErrorAmount, validationErrorAmount);
@@ -69,7 +69,7 @@ class ClientTest {
 
     @Test
     void invalidEmail() {
-        val c = new Client("name1", "email1");
+        val c = Client.builder().name("name1").email("email1").build();
         int validationErrorAmount = validator.validate(c).size();
         int expectedErrorAmount = 1;
         assertEquals(expectedErrorAmount, validationErrorAmount);

@@ -4,10 +4,7 @@ import com.mindera.pizza.domain.DatabaseTimestamps;
 import com.mindera.pizza.domain.product.Product;
 import com.mindera.pizza.utils.DataValidationConstants;
 import com.mindera.pizza.utils.Errors;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.validation.annotation.Validated;
 
 import javax.persistence.*;
@@ -18,6 +15,8 @@ import java.util.Set;
 
 @Entity
 @EqualsAndHashCode(exclude = "products", callSuper = false)
+@Builder
+@AllArgsConstructor
 public class Ingredient extends DatabaseTimestamps{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,14 +32,8 @@ public class Ingredient extends DatabaseTimestamps{
 
     @ManyToMany(mappedBy = "ingredients", fetch = FetchType.EAGER)
     @Getter
-    private Set<Product> products;
+    @Builder.Default
+    private Set<Product> products = new HashSet<>();
 
     protected Ingredient() {}
-
-    @Builder
-    public Ingredient(String name, int stock) {
-        this.name = name;
-        this.stock = stock;
-        this.products = new HashSet<>();
-    }
 }

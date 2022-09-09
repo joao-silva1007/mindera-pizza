@@ -22,7 +22,7 @@ class IngredientTest {
 
     @Test
     public void validIngredient() {
-        Ingredient i = new Ingredient("ingredient name", 12);
+        val i = Ingredient.builder().name("ingredient name").stock(12).build();
         String expectedName = "ingredient name";
         int expectedStock = 12;
 

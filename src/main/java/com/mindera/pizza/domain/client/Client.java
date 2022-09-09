@@ -3,9 +3,7 @@ package com.mindera.pizza.domain.client;
 import com.mindera.pizza.domain.DatabaseTimestamps;
 import com.mindera.pizza.utils.DataValidationConstants;
 import com.mindera.pizza.utils.Errors;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -13,6 +11,8 @@ import javax.validation.constraints.Pattern;
 
 @Entity
 @EqualsAndHashCode(callSuper = false)
+@Builder
+@AllArgsConstructor
 public class Client extends DatabaseTimestamps{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,9 +37,4 @@ public class Client extends DatabaseTimestamps{
     private String name;
 
     protected Client() {}
-
-    public Client (String name, String email) {
-        this.name = name;
-        this.email = email;
-    }
 }

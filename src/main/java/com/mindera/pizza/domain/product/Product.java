@@ -6,9 +6,7 @@ import com.mindera.pizza.domain.ingredient.Ingredient;
 import com.mindera.pizza.domain.order.RestaurantOrder;
 import com.mindera.pizza.utils.DataValidationConstants;
 import com.mindera.pizza.utils.Errors;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -19,6 +17,8 @@ import java.util.Set;
 
 @Entity
 @EqualsAndHashCode(exclude = {"ingredients", "restaurantOrders"}, callSuper = false)
+@Builder
+@AllArgsConstructor
 public class Product extends DatabaseTimestamps{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -48,20 +48,13 @@ public class Product extends DatabaseTimestamps{
             inverseJoinColumns = @JoinColumn(name = "ingredient_id", referencedColumnName = "id")
     )
     @Getter
-    private Set<Ingredient> ingredients;
+    @Builder.Default
+    private Set<Ingredient> ingredients = new HashSet<>();
 
     @ManyToMany(mappedBy = "products", fetch = FetchType.EAGER)
     private Set<RestaurantOrder> restaurantOrders;
 
     protected Product() {}
-
-    public Product(String name, float price, int stock, Category category) {
-        this.name = name;
-        this.price = price;
-        this.stock = stock;
-        this.category = category;
-        this.ingredients = new HashSet<>();
-    }
 
     public boolean addIngredient(Ingredient ingredient) {
         if (ingredient == null) return false;

@@ -20,13 +20,12 @@ class AddressTest {
     static void beforeAll() {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
-        c = new Client("name1", "email1@gmail.com");
+        c = Client.builder().name("name1").email("email1@gmail.com").build();
     }
 
     @Test
     public void validAddress() {
-        Client c = new Client("name1", "email1@gmail.com");
-        Address a = new Address("street name", 25, "1243-123", "city", "house", c);
+        val a = Address.builder().streetName("street name").streetNumber(25).zipCode("1243-123").city("city").nickname("house").client(c).build();
         a.setApartmentInformation("floor 3 apartment 2");
 
         String expectedStreetName = "street name";
@@ -51,7 +50,7 @@ class AddressTest {
 
     @Test
     void invalidStreetName() {
-        val a = new Address("", 25, "1243-123", "city", "house", c);
+        val a = Address.builder().streetName("").streetNumber(25).zipCode("1234-123").city("city").nickname("house").client(c).build();
         int validationErrorAmount = validator.validate(a).size();
         int expectedErrorAmount = 1;
         assertEquals(expectedErrorAmount, validationErrorAmount);
@@ -59,7 +58,7 @@ class AddressTest {
 
     @Test
     void invalidStreetNumber() {
-        val a = new Address("street name", -25, "1243-123", "city", "house", c);
+        val a = Address.builder().streetName("street name").streetNumber(-25).zipCode("1234-123").city("city").nickname("house").client(c).build();
         int validationErrorAmount = validator.validate(a).size();
         int expectedErrorAmount = 1;
         assertEquals(expectedErrorAmount, validationErrorAmount);
@@ -67,7 +66,7 @@ class AddressTest {
 
     @Test
     void invalidZipCode() {
-        val a = new Address("street name", 25, "12423-123", "city", "house", c);
+        val a = Address.builder().streetName("street name").streetNumber(25).zipCode("12334-123").city("city").nickname("house").client(c).build();
         int validationErrorAmount = validator.validate(a).size();
         int expectedErrorAmount = 1;
         assertEquals(expectedErrorAmount, validationErrorAmount);
@@ -75,7 +74,7 @@ class AddressTest {
 
     @Test
     void invalidCity() {
-        val a = new Address("street name", 25, "1223-123", "   ", "house", c);
+        val a = Address.builder().streetName("street name").streetNumber(25).zipCode("1234-123").city("   ").nickname("house").client(c).build();
         int validationErrorAmount = validator.validate(a).size();
         int expectedErrorAmount = 1;
         assertEquals(expectedErrorAmount, validationErrorAmount);
@@ -83,7 +82,7 @@ class AddressTest {
 
     @Test
     void invalidNickname() {
-        val a = new Address("street name", 25, "1243-123", "city", "", c);
+        val a = Address.builder().streetName("street name").streetNumber(25).zipCode("1234-123").city("city").nickname("").client(c).build();
         int validationErrorAmount = validator.validate(a).size();
         int expectedErrorAmount = 1;
         assertEquals(expectedErrorAmount, validationErrorAmount);
@@ -91,7 +90,7 @@ class AddressTest {
 
     @Test
     void invalidApartmentInformation() {
-        val a = new Address("street name", 25, "1243-123", "city", "house", c);
+        val a = Address.builder().streetName("street name").streetNumber(25).zipCode("1234-123").city("city").nickname("house").client(c).build();
         a.setApartmentInformation("    ");
         int validationErrorAmount = validator.validate(a).size();
         int expectedErrorAmount = 1;

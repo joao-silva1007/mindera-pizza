@@ -4,16 +4,15 @@ import com.mindera.pizza.domain.DatabaseTimestamps;
 import com.mindera.pizza.domain.client.Client;
 import com.mindera.pizza.utils.DataValidationConstants;
 import com.mindera.pizza.utils.Errors;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.*;
 
 @Entity
 @EqualsAndHashCode(callSuper = false)
+@Builder
+@AllArgsConstructor
 public class Address extends DatabaseTimestamps{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -50,14 +49,4 @@ public class Address extends DatabaseTimestamps{
     private Client client;
 
     protected Address() {}
-
-    @Builder
-    public Address(String streetName, int streetNumber, String zipCode, String city, String nickname, Client client) {
-        this.streetName = streetName;
-        this.streetNumber = streetNumber;
-        this.zipCode = zipCode;
-        this.city = city;
-        this.nickname = nickname;
-        this.client = client;
-    }
 }
