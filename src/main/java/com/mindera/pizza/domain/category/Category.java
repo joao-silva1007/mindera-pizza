@@ -21,7 +21,6 @@ public class Category extends DatabaseTimestamps{
 
     @Getter @Setter
     @Column(unique = true)
-    @NotBlank(message = DataValidationConstants.INVALID_NAME)
     private String name;
 
     protected Category() {}

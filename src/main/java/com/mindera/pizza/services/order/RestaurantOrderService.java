@@ -23,13 +23,16 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 @Service
 @AllArgsConstructor
+@Validated
 public class RestaurantOrderService {
     private static final Logger logger = LogManager.getLogger(RestaurantOrderService.class);
 
@@ -41,20 +44,20 @@ public class RestaurantOrderService {
 
     private final ProductRepo productRepo;
 
-    public RestaurantOrder createOrder(CreateRestaurantOrderDTO restaurantOrderDTO) {
-        Address address = addressRepo.findById(restaurantOrderDTO.addressId())
+    public RestaurantOrder createOrder(@Valid CreateRestaurantOrderDTO restaurantOrderDTO) {
+        Address address = addressRepo.findById(restaurantOrderDTO.getAddressId())
                 .orElseThrow(() -> new DatabaseEntryNotFoundException(Errors.ENTRY_NOT_FOUND, Address.class.getSimpleName()));
 
-        Client client = clientRepo.findById(restaurantOrderDTO.clientId())
+        Client client = clientRepo.findById(restaurantOrderDTO.getClientId())
                 .orElseThrow(() -> new DatabaseEntryNotFoundException(Errors.ENTRY_NOT_FOUND, Client.class.getSimpleName()));
 
         RestaurantOrder restaurantOrder = RestaurantOrder.builder()
-                .orderDateTime(DateTimeUtils.stringToLocalDateTime(restaurantOrderDTO.orderDateTime()))
+                .orderDateTime(DateTimeUtils.stringToLocalDateTime(restaurantOrderDTO.getOrderDateTime()))
                 .address(address)
                 .client(client)
                 .build();
 
-        List<Product> products = productRepo.findAllById(restaurantOrderDTO.productIds());
+        List<Product> products = productRepo.findAllById(restaurantOrderDTO.getProductIds());
         if (products.isEmpty()) {
             throw new DatabaseEntryNotFoundException(Errors.ENTRY_NOT_FOUND, Product.class.getSimpleName());
         }
@@ -67,11 +70,11 @@ public class RestaurantOrderService {
         return savedRO;
     }
 
-    public RestaurantOrder updateOrderStatus(Long id, UpdateRestaurantOrderStatusDTO updateRestaurantOrderStatusDTO) {
+    public RestaurantOrder updateOrderStatus(Long id, @Valid UpdateRestaurantOrderStatusDTO updateRestaurantOrderStatusDTO) {
         RestaurantOrder restaurantOrder = restaurantOrderRepo.findById(id)
                 .orElseThrow(() -> new DatabaseEntryNotFoundException(Errors.ENTRY_NOT_FOUND, RestaurantOrder.class.getSimpleName()));
 
-        switch (updateRestaurantOrderStatusDTO.newStatus()) {
+        switch (updateRestaurantOrderStatusDTO.getNewStatus()) {
             case CANCELED -> restaurantOrder.cancelOrder();
             case ACCEPTED -> restaurantOrder.acceptOrder();
             case FINISHED -> restaurantOrder.finishOrder();

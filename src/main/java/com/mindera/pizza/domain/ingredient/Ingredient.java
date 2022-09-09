@@ -26,11 +26,9 @@ public class Ingredient extends DatabaseTimestamps{
 
     @Getter @Setter
     @Column(unique = true)
-    @NotBlank(message = DataValidationConstants.INVALID_NAME)
     private String name;
 
     @Getter @Setter
-    @Positive(message = DataValidationConstants.INVALID_STOCK)
     private int stock;
 
     @ManyToMany(mappedBy = "ingredients", fetch = FetchType.EAGER)

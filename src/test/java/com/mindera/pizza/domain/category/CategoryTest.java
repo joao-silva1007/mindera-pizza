@@ -30,12 +30,4 @@ class CategoryTest {
         assertEquals(expectedName, c.getName());
         assertEquals(expectedErrorAmount, validationErrorAmount);
     }
-
-    @Test
-    public void invalidName() {
-        val c = new Category("   ");
-        int validationErrorAmount = validator.validate(c).size();
-        int expectedErrorAmount = 1;
-        assertEquals(expectedErrorAmount, validationErrorAmount);
-    }
 }

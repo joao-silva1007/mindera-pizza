@@ -11,21 +11,23 @@ import com.mindera.pizza.utils.LoggingMessages;
 import lombok.AllArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Objects;
 
 @Service
 @AllArgsConstructor
+@Validated
 public class CategoryService {
     private static final Logger logger = LogManager.getLogger(CategoryService.class);
 
     private final CategoryRepo categoryRepo;
 
-    public Category createCategory(CreateCategoryDTO categoryDTO) {
+    public Category createCategory(@Valid CreateCategoryDTO categoryDTO) {
         Category category = CategoryMapper.convertToDomain(categoryDTO);
 
         try {

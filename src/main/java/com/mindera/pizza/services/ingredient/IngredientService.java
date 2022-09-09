@@ -13,18 +13,21 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Objects;
 
 @Service
 @AllArgsConstructor
+@Validated
 public class IngredientService {
     private static final Logger logger = LogManager.getLogger(IngredientService.class);
 
     private final IngredientRepo ingredientRepo;
 
-    public Ingredient createIngredient(CreateIngredientDTO ingredientDTO) {
+    public Ingredient createIngredient(@Valid CreateIngredientDTO ingredientDTO) {
         Ingredient ingredient = IngredientMapper.convertToDomain(ingredientDTO);
 
         try {

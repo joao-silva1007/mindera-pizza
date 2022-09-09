@@ -1,10 +1,10 @@
 package com.mindera.pizza.exceptions;
 
-import org.springframework.dao.DataIntegrityViolationException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -12,8 +12,6 @@ import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.function.Function;
-import java.util.stream.Stream;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -37,6 +35,17 @@ public class GlobalExceptionHandler {
         List<String> validationErrors = exception.getConstraintViolations().stream().map(ConstraintViolation::getMessage).toList();
         ExceptionBody body = ExceptionBody.builder()
                 .exception(validationErrors)
+                .statusCode(HttpStatus.BAD_REQUEST)
+                .timestamp(LocalDateTime.now())
+                .build();
+
+        return new ResponseEntity<>(body.toMap(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(value = {MethodArgumentNotValidException.class})
+    public ResponseEntity<Object> dtoValidationError(MethodArgumentNotValidException exception) {
+        ExceptionBody body = ExceptionBody.builder()
+                .exception(exception.getParameter())
                 .statusCode(HttpStatus.BAD_REQUEST)
                 .timestamp(LocalDateTime.now())
                 .build();
